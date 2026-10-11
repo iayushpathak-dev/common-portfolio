@@ -1,0 +1,25 @@
+import { LinkedSidebar } from "@/components/assistant/linked-sidebar"
+import { MobileNav } from "@/components/mobile-nav"
+import { NavRail } from "@/components/nav-rail"
+import { SiteHeader } from "@/components/site-header"
+import { cn } from "@/lib/utils"
+
+/**
+ * Layout for content pages: header, then an icon rail on tablets or the chat sidebar
+ * from xl, a scrolling main area, and the bottom bar on phones.
+ */
+export function PageShell({ children, className }: { children: React.ReactNode; className?: string }) {
+  return (
+    <div className="flex h-dvh flex-col print:h-auto">
+      <SiteHeader />
+      <div className="grid min-h-0 flex-1 md:grid-cols-[64px_minmax(0,1fr)] xl:grid-cols-[248px_minmax(0,1fr)] 2xl:grid-cols-[272px_minmax(0,1fr)] print:block">
+        <NavRail />
+        <LinkedSidebar className="xl:flex" />
+        <main className="min-h-0 min-w-0 overflow-y-auto scrollbar-hide print:overflow-visible">
+          <div className={cn("mx-auto max-w-7xl p-4 lg:p-5 print:p-0", className)}>{children}</div>
+        </main>
+      </div>
+      <MobileNav />
+    </div>
+  )
+}

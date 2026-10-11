@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { profile } from "@/lib/portfolio-data"
-import { suggestions } from "@/lib/site-config"
+import { PORTFOLIO } from "@/lib/portfolio"
+
+const { profile, hero, suggestions } = PORTFOLIO
 
 export function HeroCard({ onPick, disabled }: { onPick: (prompt: string) => void; disabled?: boolean }) {
   return (
@@ -9,21 +10,21 @@ export function HeroCard({ onPick, disabled }: { onPick: (prompt: string) => voi
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-2xl font-bold tracking-tight lg:text-3xl 2xl:text-4xl">
-              Hi, I&apos;m {profile.firstName} <span aria-hidden="true">👋</span>
+              {hero.greeting} {profile.firstName} <span aria-hidden="true">{hero.wave}</span>
             </h1>
             <p className="mt-1 text-foreground/85 lg:text-lg">{profile.role}</p>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-foreground/80 sm:mt-3 2xl:text-base">
               {profile.tagline}
               <span className="hidden sm:inline">
                 {" "}
-                Ask me anything about my experience, projects, skills or the latest in frontend development.
+                {hero.intro}
               </span>
             </p>
           </div>
           <Avatar className="size-16 shrink-0 ring-4 ring-violet-400/30 lg:size-20 2xl:size-28">
             <AvatarImage src={profile.avatar} alt={profile.name} />
             <AvatarFallback className="bg-linear-to-br from-blue-500 to-violet-500 text-lg font-semibold text-white lg:text-2xl">
-              AP
+              {profile.initials}
             </AvatarFallback>
           </Avatar>
         </div>

@@ -1,10 +1,10 @@
-import { ChevronRight, CircleCheck, Circle, Database, Download, FolderOpen, Globe, Sparkles } from "lucide-react"
+import { ChevronRight, CircleCheck, Circle, Sparkles } from "lucide-react"
 
-import { GithubIcon, LinkedinIcon } from "@/components/brand-icons"
 import type { ChatMode } from "@/lib/chat-modes"
-import { profile } from "@/lib/portfolio-data"
-import { relatedSections } from "@/lib/site-config"
+import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
+
+const { insights, modes } = PORTFOLIO
 
 type InsightsPanelProps = {
   mode: ChatMode
@@ -14,37 +14,33 @@ type InsightsPanelProps = {
   onPick: (prompt: string) => void
 }
 
+const rowClass =
+  "flex w-full items-center gap-3 rounded-xl border bg-background/40 px-3 py-2.5 text-left text-sm transition-colors hover:bg-muted"
+
 export function InsightsPanel({ mode, usedWeb, modelId, online, onPick }: InsightsPanelProps) {
   return (
     <aside className="hidden min-h-0 flex-col gap-3 overflow-y-auto scrollbar-hide border-l p-3 xl:flex 2xl:p-4">
-      <Panel title="Sources Used">
+      <Panel title={insights.sourcesTitle}>
         <SourceRow
-          icon={<Database className="size-5" />}
+          icon={<modes.knowledge.icon className="size-5" />}
           tone="bg-success text-white"
-          title="Personal Knowledge"
-          subtitle="Information from my portfolio data"
+          {...insights.sources.knowledge}
           active={mode !== "web" || !usedWeb}
         />
         <SourceRow
-          icon={<Globe className="size-5" />}
+          icon={<modes.web.icon className="size-5" />}
           tone="bg-blue-600 text-white"
-          title="Web Search"
-          subtitle="Latest information from internet"
+          {...insights.sources.web}
           active={usedWeb}
         />
       </Panel>
 
-      <Panel title="Related Sections">
-        {relatedSections.map((s) => (
-          <button
-            key={s.title}
-            type="button"
-            onClick={() => onPick(s.prompt)}
-            className="flex w-full items-center gap-3 rounded-xl border bg-background/40 p-3 text-left transition-colors hover:bg-muted"
-          >
+      <Panel title={insights.relatedTitle}>
+        {insights.related.map((s) => (
+          <button key={s.title} type="button" onClick={() => onPick(s.prompt)} className={cn(rowClass, "p-3")}>
             <s.icon className="size-5 shrink-0 text-muted-foreground" />
             <span className="min-w-0 flex-1">
-              <span className="block text-sm font-medium">{s.title}</span>
+              <span className="block font-medium">{s.title}</span>
               <span className="block text-xs text-muted-foreground">{s.subtitle}</span>
             </span>
             <ChevronRight className="size-4 text-muted-foreground" />
@@ -52,21 +48,24 @@ export function InsightsPanel({ mode, usedWeb, modelId, online, onPick }: Insigh
         ))}
       </Panel>
 
-      <Panel title="Quick Actions">
-        <QuickAction href={profile.resumeUrl} external icon={<Download className="size-4" />} label="View My Resume" />
-        <button
-          type="button"
-          onClick={() => onPick("Tell me about your projects")}
-          className="flex w-full items-center gap-3 rounded-xl border bg-background/40 px-3 py-2.5 text-sm transition-colors hover:bg-muted"
-        >
-          <FolderOpen className="size-4" /> See Projects
-        </button>
-        <QuickAction href={profile.links.linkedin} external icon={<LinkedinIcon className="size-4" />} label="Connect on LinkedIn" />
-        <QuickAction href={profile.links.github} external icon={<GithubIcon className="size-4" />} label="View GitHub" />
+      <Panel title={insights.quickActionsTitle}>
+        {insights.quickActions.map((action) =>
+          "href" in action ? (
+            <a key={action.label} href={action.href} target="_blank" rel="noreferrer" className={rowClass}>
+              <action.icon className="size-4" />
+              {action.label}
+            </a>
+          ) : (
+            <button key={action.label} type="button" onClick={() => onPick(action.prompt)} className={rowClass}>
+              <action.icon className="size-4" />
+              {action.label}
+            </button>
+          ),
+        )}
       </Panel>
 
       <section className="rounded-2xl border border-primary/30 bg-linear-to-br from-hero-from to-hero-to p-4">
-        <h2 className="mb-3 font-semibold">Currently Using</h2>
+        <h2 className="mb-3 font-semibold">{insights.modelTitle}</h2>
         <div className="flex items-start gap-3">
           <Sparkles className="mt-0.5 size-7 shrink-0 text-blue-400" />
           <div className="min-w-0 flex-1">
@@ -79,15 +78,13 @@ export function InsightsPanel({ mode, usedWeb, modelId, online, onPick }: Insigh
                 )}
               >
                 <span className={cn("size-1.5 rounded-full", online ? "bg-success" : "bg-destructive")} />
-                {online ? "Online" : "No API key"}
+                {online ? insights.online : insights.offline}
               </span>
             </div>
-            <p className="text-xs text-muted-foreground">Google AI via Vercel AI SDK</p>
+            <p className="text-xs text-muted-foreground">{insights.modelProvider}</p>
           </div>
         </div>
-        <p className="mt-3 text-xs text-foreground/80">
-          Auto-selects between my knowledge and web search based on your question.
-        </p>
+        <p className="mt-3 text-xs text-foreground/80">{insights.modelNote}</p>
       </section>
     </aside>
   )
@@ -128,28 +125,5 @@ function SourceRow({
         <Circle className="size-5 text-muted-foreground" aria-label="Not used" />
       )}
     </div>
-  )
-}
-
-function QuickAction({
-  href,
-  icon,
-  label,
-  external,
-}: {
-  href: string
-  icon: React.ReactNode
-  label: string
-  external?: boolean
-}) {
-  return (
-    <a
-      href={href}
-      {...(external && { target: "_blank", rel: "noreferrer" })}
-      className="flex items-center gap-3 rounded-xl border bg-background/40 px-3 py-2.5 text-sm transition-colors hover:bg-muted"
-    >
-      {icon}
-      {label}
-    </a>
   )
 }

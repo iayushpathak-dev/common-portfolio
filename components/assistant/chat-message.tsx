@@ -7,6 +7,7 @@ import remarkGfm from "remark-gfm"
 
 import { Button } from "@/components/ui/button"
 import type { AssistantMessage } from "@/lib/chat-modes"
+import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
 export function messageText(message: AssistantMessage) {
@@ -55,7 +56,7 @@ export function ChatMessage({ message, streaming }: { message: AssistantMessage;
 
         {message.metadata?.searchUnavailable && (
           <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Globe className="size-3.5" /> Web search limit reached, so this answer uses my portfolio data only.
+            <Globe className="size-3.5" /> {PORTFOLIO.chat.searchUnavailable}
           </p>
         )}
 

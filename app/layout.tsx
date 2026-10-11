@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { profile } from "@/lib/portfolio-data";
+import { PORTFOLIO } from "@/lib/portfolio";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: `${profile.name} — ${profile.role}`,
-  description: `${profile.tagline} Ask my AI assistant about my experience, projects and skills.`,
+  title: PORTFOLIO.seo.title,
+  description: PORTFOLIO.seo.description,
 };
 
 export const viewport: Viewport = {

@@ -1,16 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { History, Mail, MessageSquare, Plus, Search, Sparkles, Trash2 } from "lucide-react"
+import { History, MessageSquare, Plus, Search, Sparkles, Trash2 } from "lucide-react"
 
-import { GithubIcon, LinkedinIcon, WhatsappIcon } from "@/components/brand-icons"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { deleteChat, timeAgo, type StoredChat } from "@/lib/chat-history"
-import type { ChatMode } from "@/lib/chat-modes"
-import { profile } from "@/lib/portfolio-data"
-import { modeOptions } from "@/lib/site-config"
+import { modeOptions, type ChatMode } from "@/lib/chat-modes"
+import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
+
+const { sidebar } = PORTFOLIO
 
 type ChatSidebarProps = {
   chats: StoredChat[]
@@ -19,27 +19,42 @@ type ChatSidebarProps = {
   onModeChange: (mode: ChatMode) => void
   onNewChat: () => void
   onSelectChat: (chat: StoredChat) => void
+  /** Breakpoint at which the sidebar appears (default lg:flex). */
+  className?: string
 }
 
-export function ChatSidebar({ chats, activeId, mode, onModeChange, onNewChat, onSelectChat }: ChatSidebarProps) {
+export function ChatSidebar({
+  chats,
+  activeId,
+  mode,
+  onModeChange,
+  onNewChat,
+  onSelectChat,
+  className = "lg:flex",
+}: ChatSidebarProps) {
   const [query, setQuery] = useState("")
   const [searching, setSearching] = useState(false)
   const visible = chats.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()))
 
   return (
-    <aside className="hidden min-h-0 flex-col gap-4 overflow-y-auto scrollbar-hide border-r bg-sidebar p-3 lg:flex">
+    <aside
+      className={cn(
+        "hidden min-h-0 flex-col gap-4 overflow-y-auto scrollbar-hide border-r bg-sidebar p-3 print:hidden",
+        className,
+      )}
+    >
       <Button
         variant="outline"
         className="h-10 w-full border-primary/70 hover:bg-primary/10 dark:border-primary/70"
         onClick={onNewChat}
       >
-        <Plus /> New Chat
+        <Plus /> {sidebar.newChat}
       </Button>
 
       <section className="flex flex-col gap-1">
         <div className="flex items-center justify-between px-1 pb-1">
           <h2 className="flex items-center gap-2 text-sm font-medium">
-            <History className="size-4" /> Recent Chats
+            <History className="size-4" /> {sidebar.recentChats}
           </h2>
           <Button
             variant="ghost"
@@ -59,14 +74,14 @@ export function ChatSidebar({ chats, activeId, mode, onModeChange, onNewChat, on
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search chats…"
+            placeholder={sidebar.searchPlaceholder}
             className="mb-1 h-9 rounded-lg border bg-background px-3 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
           />
         )}
 
         {visible.length === 0 ? (
           <p className="px-1 py-2 text-sm text-muted-foreground">
-            {chats.length === 0 ? "Your conversations will appear here." : "No chats match."}
+            {chats.length === 0 ? sidebar.emptyHistory : sidebar.noMatches}
           </p>
         ) : (
           <ul className="flex flex-col gap-1">
@@ -107,7 +122,7 @@ export function ChatSidebar({ chats, activeId, mode, onModeChange, onNewChat, on
 
       <section className="flex flex-col gap-2">
         <h2 className="flex items-center gap-2 px-1 pb-1 font-semibold">
-          <Sparkles className="size-5 text-violet-400" /> AI Assistant
+          <Sparkles className="size-5 text-violet-400" /> {sidebar.assistantTitle}
         </h2>
         {modeOptions.map((option) => (
           <button
@@ -126,7 +141,7 @@ export function ChatSidebar({ chats, activeId, mode, onModeChange, onNewChat, on
             <span className="min-w-0">
               <span className="block text-sm font-medium">
                 {option.label}
-                {option.value === "auto" && <span className="font-normal text-muted-foreground"> (Recommended)</span>}
+                {option.value === "auto" && <span className="font-normal text-muted-foreground"> {sidebar.recommended}</span>}
               </span>
               <span className="block truncate text-xs text-muted-foreground">{option.description}</span>
             </span>
@@ -135,20 +150,13 @@ export function ChatSidebar({ chats, activeId, mode, onModeChange, onNewChat, on
       </section>
 
       <section className="mt-auto rounded-2xl bg-linear-to-br from-hero-from to-hero-to p-4">
-        <h2 className="mb-3 text-sm font-medium">Let&apos;s Connect</h2>
+        <h2 className="mb-3 text-sm font-medium">{sidebar.connectTitle}</h2>
         <div className="flex gap-2">
-          <SocialLink href={profile.links.linkedin} label="LinkedIn">
-            <LinkedinIcon className="size-4" />
-          </SocialLink>
-          <SocialLink href={profile.links.github} label="GitHub">
-            <GithubIcon className="size-4" />
-          </SocialLink>
-          <SocialLink href={profile.links.email} label="Email">
-            <Mail className="size-4" />
-          </SocialLink>
-          <SocialLink href={profile.links.whatsapp} label="WhatsApp">
-            <WhatsappIcon className="size-4" />
-          </SocialLink>
+          {sidebar.socials.map((social) => (
+            <SocialLink key={social.label} href={social.href} label={social.label}>
+              <social.icon className="size-4" />
+            </SocialLink>
+          ))}
         </div>
       </section>
     </aside>

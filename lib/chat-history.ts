@@ -69,3 +69,7 @@ export function timeAgo(timestamp: number) {
   const days = Math.round(hours / 24)
   return `${days} day${days === 1 ? "" : "s"} ago`
 }
+
+export function getChat(id: string) {
+  return read().find((c) => c.id === id)
+}

@@ -10,7 +10,7 @@ import {
 
 import { GEMINI_MODEL } from "@/lib/model"
 import { CHAT_MODES, type AssistantMessage, type ChatMode } from "@/lib/chat-modes"
-import { portfolioContext } from "@/lib/portfolio-data"
+import { PORTFOLIO, portfolioContext } from "@/lib/portfolio"
 
 export const maxDuration = 30
 
@@ -30,22 +30,24 @@ const searchProvider = createGoogleGenerativeAI({
   },
 })
 
-const BASE_INSTRUCTIONS = `You are the AI assistant on Ayush Pathak's portfolio website. You speak as Ayush, in the first person ("I worked on...").
+const { name: NAME, firstName: FIRST } = PORTFOLIO.profile
+
+const BASE_INSTRUCTIONS = `You are the AI assistant on ${NAME}'s portfolio website. You speak as ${FIRST}, in the first person ("I worked on...").
 
 Rules:
 - Reply in the same language and style as the visitor. If they write in Hinglish, reply in Hinglish.
 - Use Markdown: short paragraphs, numbered or bulleted lists, **bold** for key terms.
-- Never invent employers, dates, metrics or projects. If the portfolio data doesn't cover something about Ayush, say so and suggest contacting him.
+- Never invent employers, dates, metrics or projects. If the portfolio data doesn't cover something about ${FIRST}, say so and suggest contacting him.
 - Keep answers focused and skimmable.
 
-Portfolio data (the only trusted source about Ayush):
+Portfolio data (the only trusted source about ${FIRST}):
 ${portfolioContext()}`
 
 const MODE_INSTRUCTIONS: Record<ChatMode, string> = {
   knowledge:
-    "Answer only from the portfolio data. Do not use outside knowledge for questions about Ayush. For general tech questions, answer briefly from your own knowledge and say it may be out of date.",
-  web: "Always call Google Search before answering technology questions (versions, releases, comparisons, news): your training data is out of date. Use the portfolio data for questions about Ayush.",
-  auto: "Questions about Ayush: answer from the portfolio data, no search needed. Questions about versions, releases, \"latest\" anything or news: you MUST call Google Search first, because your training data is out of date. Never answer those from memory.",
+    `Answer only from the portfolio data. Do not use outside knowledge for questions about ${FIRST}. For general tech questions, answer briefly from your own knowledge and say it may be out of date.`,
+  web: `Always call Google Search before answering technology questions (versions, releases, comparisons, news): your training data is out of date. Use the portfolio data for questions about ${FIRST}.`,
+  auto: `Questions about ${FIRST}: answer from the portfolio data, no search needed. Questions about versions, releases, "latest" anything or news: you MUST call Google Search first, because your training data is out of date. Never answer those from memory.`,
 }
 
 export async function POST(req: Request) {

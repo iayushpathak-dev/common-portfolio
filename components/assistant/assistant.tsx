@@ -1,6 +1,7 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Suspense, useEffect, useEffectEvent, useRef, useState } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useChat } from "@ai-sdk/react"
 import { generateId } from "ai"
 import { RotateCcw } from "lucide-react"
@@ -10,9 +11,11 @@ import { AssistantAvatar, ChatMessage, TypingDots } from "@/components/assistant
 import { ChatSidebar } from "@/components/assistant/chat-sidebar"
 import { HeroCard } from "@/components/assistant/hero-card"
 import { InsightsPanel } from "@/components/assistant/insights-panel"
+import { NavRail } from "@/components/nav-rail"
 import { Button } from "@/components/ui/button"
-import { saveChat, useChatHistory, type StoredChat } from "@/lib/chat-history"
-import type { AssistantMessage, ChatMode } from "@/lib/chat-modes"
+import { getChat, saveChat, useChatHistory, type StoredChat } from "@/lib/chat-history"
+import { CHAT_MODES, type AssistantMessage, type ChatMode } from "@/lib/chat-modes"
+import { PORTFOLIO } from "@/lib/portfolio"
 
 export function Assistant({ modelId, online }: { modelId: string; online: boolean }) {
   const chats = useChatHistory()
@@ -57,8 +60,22 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
     sendMessage({ text }, { body: { mode } })
   }
 
+  // Links from other pages arrive as ?new=1, ?chat=<id>, ?mode=<mode> or ?ask=<question>.
+  function applyUrlIntent({ newChat, chatId, mode: nextMode, ask }: UrlIntentParams) {
+    const validMode = CHAT_MODES.includes(nextMode as ChatMode) ? (nextMode as ChatMode) : null
+    if (validMode) setMode(validMode)
+
+    const chat = chatId ? getChat(chatId) : undefined
+    if (chat) switchTo(chat.id, chat.messages)
+    else if (newChat || ask) switchTo(null, [])
+
+    // A question from another page (blog post, project) starts a fresh chat with it.
+    if (ask) sendMessage({ text: ask }, { body: { mode: validMode ?? mode } })
+  }
+
   return (
-    <div className="grid min-h-0 flex-1 lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_280px] 2xl:grid-cols-[272px_minmax(0,1fr)_320px]">
+    <div className="grid min-h-0 flex-1 md:grid-cols-[64px_minmax(0,1fr)] lg:grid-cols-[248px_minmax(0,1fr)] xl:grid-cols-[240px_minmax(0,1fr)_280px] 2xl:grid-cols-[272px_minmax(0,1fr)_320px]">
+      <NavRail className="md:flex lg:hidden" />
       <ChatSidebar
         chats={chats}
         activeId={activeId}
@@ -94,11 +111,11 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
               <div role="alert" className="flex items-center justify-between gap-3 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm">
                 <span>
                   {online
-                    ? error.message || "Something went wrong while answering. Please try again."
-                    : "The assistant isn't configured yet: set GOOGLE_GENERATIVE_AI_API_KEY in .env.local."}
+                    ? error.message || PORTFOLIO.chat.genericError
+                    : PORTFOLIO.chat.notConfigured}
                 </span>
                 <Button size="sm" variant="outline" onClick={() => regenerate({ body: { mode } })}>
-                  <RotateCcw /> Retry
+                  <RotateCcw /> {PORTFOLIO.chat.retry}
                 </Button>
               </div>
             )}
@@ -111,6 +128,33 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
       </main>
 
       <InsightsPanel mode={mode} usedWeb={usedWeb} modelId={modelId} online={online} onPick={send} />
+
+      {/* useSearchParams needs a Suspense boundary so the rest of the page stays prerendered. */}
+      <Suspense fallback={null}>
+        <UrlIntent onIntent={applyUrlIntent} />
+      </Suspense>
     </div>
   )
+}
+
+type UrlIntentParams = { newChat: boolean; chatId: string | null; mode: string | null; ask: string | null }
+
+function UrlIntent({ onIntent }: { onIntent: (intent: UrlIntentParams) => void }) {
+  const params = useSearchParams()
+  const router = useRouter()
+  const pathname = usePathname()
+  const newChat = params.has("new")
+  const chatId = params.get("chat")
+  const mode = params.get("mode")
+  const ask = params.get("ask")
+  const handle = useEffectEvent(onIntent)
+
+  useEffect(() => {
+    if (!newChat && chatId === null && mode === null && ask === null) return
+    handle({ newChat, chatId, mode, ask })
+    // Drop the params so a refresh doesn't reapply them and the same link works again.
+    router.replace(pathname, { scroll: false })
+  }, [newChat, chatId, mode, ask, pathname, router])
+
+  return null
 }

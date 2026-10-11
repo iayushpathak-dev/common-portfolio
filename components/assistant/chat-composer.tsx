@@ -4,9 +4,11 @@ import { useState } from "react"
 import { Send, Square } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { ChatMode } from "@/lib/chat-modes"
-import { modeOptions } from "@/lib/site-config"
+import { modeOptions, type ChatMode } from "@/lib/chat-modes"
+import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
+
+const { composer } = PORTFOLIO
 
 type ChatComposerProps = {
   mode: ChatMode
@@ -51,7 +53,7 @@ export function ChatComposer({ mode, onModeChange, onSend, onStop, busy }: ChatC
               submit()
             }
           }}
-          placeholder="Ask me anything..."
+          placeholder={composer.placeholder}
           className="field-sizing-content max-h-40 min-h-10 w-full min-w-0 flex-1 resize-none overflow-y-auto scrollbar-hide wrap-anywhere bg-transparent px-2 py-2 text-base outline-none placeholder:text-muted-foreground sm:text-sm"
         />
         {busy ? (
@@ -85,14 +87,14 @@ export function ChatComposer({ mode, onModeChange, onSend, onStop, busy }: ChatC
         <div className="ml-auto hidden flex-col items-end gap-1 sm:flex">
           {busy ? (
             <Button type="button" size="lg" variant="secondary" onClick={onStop} className="px-4">
-              <Square className="fill-current" /> Stop
+              <Square className="fill-current" /> {composer.stop}
             </Button>
           ) : (
             <Button type="submit" size="lg" disabled={!input.trim()} className="px-5">
-              <Send /> Send
+              <Send /> {composer.send}
             </Button>
           )}
-          <span className="text-xs text-muted-foreground">Ctrl + Enter to send</span>
+          <span className="text-xs text-muted-foreground">{composer.shortcutHint}</span>
         </div>
       </div>
     </form>
