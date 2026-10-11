@@ -61,9 +61,11 @@ export function ExperienceTimeline({
               <div className="text-muted-foreground">
                 <p className="text-foreground">{job.period}</p>
                 <p>{job.duration}</p>
-                <p className="flex items-center gap-1 md:justify-end">
-                  <MapPin className="size-3.5" /> {job.location}
-                </p>
+                {job.location && (
+                  <p className="flex items-center gap-1 md:justify-end">
+                    <MapPin className="size-3.5" /> {job.location}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="mb-1.5 text-xs font-medium">{technologiesTitle}</p>
@@ -89,9 +91,7 @@ export function ExperienceTimeline({
               <div className="min-w-0 text-sm">
                 <h3 className="font-semibold">{educationTitle}</h3>
                 <p>{e.degree}</p>
-                <p className="text-muted-foreground">
-                  {e.period} · {e.place}
-                </p>
+                <p className="text-muted-foreground">{[e.period, e.place].filter(Boolean).join(" · ")}</p>
               </div>
             </article>
           </li>

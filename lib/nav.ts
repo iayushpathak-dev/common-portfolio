@@ -8,18 +8,21 @@ export type NavPage = (typeof pages)[keyof typeof pages]
 export const headerLinks = [pages.home, pages.about, pages.projects, pages.experience, pages.blog]
 
 /** Tablet icon rail. */
-export const railLinks = [pages.assistant, pages.about, pages.projects, pages.experience, pages.blog, pages.resume]
+export const railLinks = [
+  pages.home,
+  pages.assistant,
+  pages.about,
+  pages.projects,
+  pages.experience,
+  pages.blog,
+  pages.resume,
+]
 
 /** Mobile bottom bar; everything else goes in its "More" sheet. */
 export const bottomLinks = [pages.home, pages.projects, pages.assistant, pages.experience]
 export const moreLinks = [pages.about, pages.blog, pages.resume]
 
-/**
- * Home and AI Assistant share "/". The assistant represents that page, so Home is never
- * highlighted.
- */
 export function isActive(page: NavPage, pathname: string) {
-  if (page === pages.home) return false
   return page.href === "/" ? pathname === "/" : pathname.startsWith(page.href)
 }
 

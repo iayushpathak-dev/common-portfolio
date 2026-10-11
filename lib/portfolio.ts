@@ -9,7 +9,7 @@ import {
   Atom,
   BookOpen,
   Blocks,
-  Box,
+  Building,
   Briefcase,
   Code,
   Database,
@@ -17,8 +17,8 @@ import {
   Ellipsis,
   FileText,
   FolderOpen,
+  Gauge,
   Globe,
-  GraduationCap,
   Handshake,
   House,
   Info,
@@ -27,12 +27,16 @@ import {
   Lightbulb,
   Mail,
   Newspaper,
+  ScanFace,
   ShieldCheck,
+  ShoppingBag,
   Smartphone,
   Sparkles,
   Target,
+  Ticket,
   Timer,
   TrendingUp,
+  Truck,
   User,
   Users,
   Zap,
@@ -41,20 +45,20 @@ import {
 import { GithubIcon, LinkedinIcon, WhatsappIcon } from "@/components/brand-icons"
 
 // Your WhatsApp number with country code, digits only (e.g. "919876543210").
-const WHATSAPP_NUMBER = ""
+const WHATSAPP_NUMBER = "917906190479"
 
 const RESUME_URL = "/resume.pdf"
 
 const CONTACT = {
   email: "ayushpathakhaldwani@gmail.com",
+  phone: "+91 7906190479",
   github: "https://github.com/iayushpathak-dev",
-  // e.g. "https://www.linkedin.com/in/your-handle/"
-  linkedin: "https://www.linkedin.com/",
+  linkedin: "https://www.linkedin.com/in/dev-ayush-pathak",
   whatsapp: `https://wa.me/${WHATSAPP_NUMBER}`,
 }
 
 const PROMPTS = {
-  fitpass: "What did you work on at Fitpass?",
+  fitpass: "What did you work on at FITPASS?",
   projects: "Tell me about your projects",
   skills: "What are your key skills?",
   about: "Tell me about yourself",
@@ -62,139 +66,200 @@ const PROMPTS = {
 
 export const PORTFOLIO = {
   /* ───────────── About you (also sent to the AI as its knowledge) ───────────── */
+  // Facts below come from public/resume.pdf; keep the two in sync.
   profile: {
     name: "Ayush Pathak",
     firstName: "Ayush",
     initials: "AP",
-    role: "Senior Frontend Developer",
+    role: "Senior Frontend Engineer",
     tagline:
-      "I build scalable, high-performance web applications using React.js, Next.js and modern frontend technologies.",
+      "I build production React.js and Next.js applications, with a focus on frontend architecture, performance and SEO.",
     avatar: "/avatar.png",
     resumeUrl: RESUME_URL,
+    // Not on the resume; shown on the site only.
     location: "Delhi NCR, India",
     totalExperience: "6+ Years",
     contact: CONTACT,
     intro:
-      "6+ years of experience building scalable, high-performance web applications using React.js, Next.js and modern frontend technologies. Passionate about creating great user experiences, solving complex problems and building impactful products.",
+      "6+ years of experience building production React.js and Next.js applications. Experienced in frontend architecture, BFF/API integration and SSR, SSG, ISR and CSR, focused on performance, SEO and shipping features to production.",
     summary:
-      "Senior Frontend Developer with 6+ years of experience in designing and developing scalable, high-performance web applications. Expertise in React.js, Next.js, TypeScript and modern frontend technologies. Experienced in building product features from scratch, optimizing performance, creating architecture for complex user journeys and leading frontend development initiatives in cross-functional teams.",
+      "Senior Frontend Engineer with 6+ years of experience building production React.js and Next.js applications. Experienced in frontend architecture, BFF/API integration, and SSR, SSG, ISR, and CSR. Focused on performance, SEO, and shipping features to production.",
     quote: "I believe in writing clean code, building scalable products and always learning new things.",
   },
 
-  // TODO: verify these numbers; the AI repeats them as facts.
   highlights: [
     { value: "6+", label: "Years Experience", icon: Briefcase },
-    { value: "7+", label: "Product Projects", icon: Box },
-    { value: "1M+", label: "Users Impacted", icon: Users },
-    { value: "2", label: "Junior Developers Mentored", icon: GraduationCap },
+    { value: "20+", label: "Corporate Clients on Partners Studio", icon: Building },
+    { value: "60,000+", label: "Users on the Nutrition Dashboard", icon: Users },
+    { value: "90+", label: "Lighthouse Scores on fitpass.co.in", icon: Gauge },
   ],
 
-  // Most recent first. TODO: replace "Earlier Company" with the real name and check dates.
+  // Most recent first. location is optional (the resume doesn't list one per job).
   experience: [
     {
-      company: "Fitpass",
-      role: "Senior Frontend Developer",
-      period: "Mar 2020 – Present",
-      duration: "6+ years",
-      location: "Delhi NCR, India",
+      company: "FITPASS",
+      role: "Senior Frontend Engineer",
+      period: "Nov 2022 – Present",
+      duration: "3+ years",
+      location: "",
       summary:
-        "Working on the Fitpass web platform and corporate PWA used by 1M+ users. Built scalable features, optimized performance and led frontend development for multiple products.",
+        "Building the FITPASS web platform, membership platform, corporate PWA and dietitian tools with React.js and Next.js.",
       highlights: [
-        "PWA Development: migrated the Fitpass Consumer App to a Progressive Web App, significantly improving performance and user experience.",
-        "BFF Architecture: designed and implemented a Backend-for-Frontend layer that simplified integration with multiple backend services.",
-        "Corporate Integrations: built a config-driven approach and custom integrations for corporate clients, including authentication, access control and reporting modules.",
-        "Performance Optimization: improved app loading speed, bundle size and overall performance.",
-        "Team Collaboration: shipped features with cross-functional teams and mentored 2+ junior developers.",
+        "fitpass.co.in: built on Next.js, using SSR, SSG, ISR or CSR based on SEO and performance needs, with webhook-triggered ISR and Lighthouse scores in the 90s.",
+        "BFF layer: built with Next.js Route Handlers to connect backend and external services, handle common business logic and route gRPC calls.",
+        "FITSHOP: rebuilt the membership platform on the App Router using Server Components and Server Actions.",
+        "Partners Studio: shipped a React PWA used by 20+ corporate clients, with offline support and service workers.",
+        "Nutrition Dashboard: built a JSON-driven UI used by 20+ dietitians to manage plans for 60,000+ users.",
+        "Aghora integration: real-time data and user flows across dietitian chat, scheduled calls, audio calls and chat history migration.",
+        "Liveness verification: built a flow using TensorFlow Face Landmarks Detection to verify users before booking, and implemented QR scanning for gym workout attendance.",
       ],
-      technologies: ["React.js", "Next.js", "TypeScript", "Redux", "Zustand", "React Query", "BFF", "PWA", "Performance"],
+      technologies: [
+        "JavaScript",
+        "React.js",
+        "Next.js (Pages & App Router)",
+        "Zustand",
+        "React Query",
+        "Tailwind CSS",
+        "Material UI",
+      ],
     },
     {
-      company: "Earlier Company",
-      role: "Frontend Developer",
-      period: "2018 – 2020",
-      duration: "2 years",
-      location: "Delhi NCR, India",
-      summary: "Worked on web applications and product features using React.js and JavaScript.",
-      highlights: [
-        "Worked on web applications, product features and frontend development using React.js and JavaScript.",
-        "Collaborated with backend teams to integrate APIs and build new features.",
-      ],
-      technologies: ["React.js", "JavaScript", "HTML", "CSS", "Git"],
+      company: "Elite Mindz",
+      role: "Software Developer",
+      period: "Feb 2022 – Nov 2022",
+      duration: "10 months",
+      location: "",
+      summary:
+        "Built QTickets, a multi-region ticket booking platform for movies, events, and sports, with seat selection, checkout, REST API integration, and the Doha Bank payment gateway.",
+      highlights: [],
+      technologies: ["React.js", "REST APIs", "Payment Gateway"],
+    },
+    {
+      company: "Enbake Consulting",
+      role: "Software Engineer",
+      period: "Mar 2021 – Dec 2021",
+      duration: "10 months",
+      location: "",
+      summary: "Built LOGITRACK, an IoT dashboard for live shipment tracking, using React.js, TypeScript, and REST APIs.",
+      highlights: [],
+      technologies: ["React.js", "TypeScript", "REST APIs"],
+    },
+    {
+      company: "Magic Software",
+      role: "Digital Media Trainee",
+      period: "Jan 2020 – Feb 2021",
+      duration: "1 year 2 months",
+      location: "",
+      summary:
+        "Built interactive EdTech learning modules with React.js and HTML5, migrating content from Flash and improving accessibility.",
+      highlights: [],
+      technologies: ["React.js", "HTML5", "Accessibility"],
     },
   ],
 
   skillGroups: [
-    { title: "Frontend", items: ["React.js", "Next.js", "TypeScript", "JavaScript", "HTML", "CSS"] },
-    { title: "State Management", items: ["Redux", "Zustand", "React Query"] },
-    { title: "Tools & Others", items: ["Git", "Docker", "CI/CD", "AWS (Basic)", "Jest", "Playwright"] },
+    { title: "Core Frontend", items: ["React.js", "Next.js", "JavaScript (ES6+)", "TypeScript", "HTML5", "CSS3"] },
     {
-      title: "Architecture & Concepts",
-      items: ["SSR / SSG / ISR", "Micro Frontends", "BFF Architecture", "Performance Optimization"],
+      title: "React & State Management",
+      items: ["React Hooks", "Functional Components", "Redux", "Zustand", "React Query", "Context API"],
     },
-    { title: "Other Skills", items: ["REST APIs", "Web Vitals", "PWA", "System Design (Frontend)"] },
+    {
+      title: "Architecture",
+      items: ["Next.js App Router", "Pages Router", "SSR", "SSG", "ISR", "CSR", "Server Components", "Server Actions", "BFF"],
+    },
+    { title: "APIs & Integration", items: ["REST APIs", "API Integration", "gRPC", "Webhooks"] },
+    { title: "UI", items: ["Tailwind CSS", "Material UI", "Responsive Design", "Reusable Components"] },
+    {
+      title: "Performance & Quality",
+      items: ["Core Web Vitals", "Lighthouse", "SEO", "WCAG 2.1 AA", "Jest", "React Testing Library"],
+    },
+    { title: "AI & Computer Vision", items: ["TensorFlow", "Face Landmarks Detection"] },
+    {
+      title: "Engineering & AI Tools",
+      items: ["Git", "GitHub", "CI/CD", "Agile/Scrum", "Claude Code", "Codex", "ChatGPT"],
+    },
   ],
 
+  // period is optional (not on the resume).
   education: [
-    { degree: "BCA - Computer Science & Applications", place: "Uttarakhand, India", period: "2013 – 2016" },
-  ],
-
-  certifications: [
-    { name: "Frontend Development (Self Learning)", status: "Ongoing" },
-    { name: "React & Next.js Projects", status: "Completed" },
-    { name: "JavaScript & TypeScript", status: "Completed" },
+    { degree: "Master of Computer Applications (MCA)", place: "Graphic Era Deemed University, Dehradun, India", period: "" },
+    { degree: "Bachelor of Computer Applications (BCA)", place: "Graphic Era Hill University, Bhimtal, India", period: "" },
   ],
 
   // visual: how the card's image area is drawn (no screenshots yet).
   // githubUrl / caseStudyUrl are optional; without caseStudyUrl, "View Case Study" asks the AI.
-  // TODO: verify project details; add screenshots and real links when available.
   projects: [
     {
-      name: "Fitpass Corporate PWA",
+      name: "Partners Studio",
       description:
-        "A progressive web app used by multiple corporate clients inside their native apps (webviews). Configurable features per corporate with optimized performance and seamless user experience.",
-      tags: ["Next.js", "React.js", "PWA"],
+        "A React PWA used by 20+ corporate clients, with offline support and service workers. Built at FITPASS.",
+      tags: ["React.js", "PWA", "Service Workers"],
       categories: ["Web App", "PWA"],
       featured: true,
       visual: { kind: "icon", icon: Smartphone },
     },
     {
-      name: "BFF & Config-driven Architecture",
+      name: "fitpass.co.in",
       description:
-        "Multi-tenant integration with a BFF layer in Next.js to filter and transform responses from a legacy backend into clean JSON config for different corporate clients.",
-      tags: ["Next.js", "Architecture", "BFF"],
-      categories: ["Architecture"],
-      visual: { kind: "diagram", clients: ["Corporate App", "Config (JSON)"], hub: "BFF (Next.js)", backend: "Legacy Backend" },
-    },
-    {
-      name: "Landing Pages & Marketing Website",
-      description:
-        "High-performance marketing website with SEO optimization, dynamic content and analytics integration.",
-      tags: ["Next.js", "SEO", "Performance"],
+        "The FITPASS website on Next.js, using SSR, SSG, ISR or CSR per page based on SEO and performance needs, with webhook-triggered ISR and Lighthouse scores in the 90s.",
+      tags: ["Next.js", "SEO", "ISR"],
       categories: ["Web App", "Performance"],
-      visual: { kind: "icon", icon: Globe },
+      visual: { kind: "score", score: 90, display: "90+", label: "Lighthouse" },
     },
     {
-      name: "Internal Dashboard",
+      name: "BFF Layer",
       description:
-        "Internal dashboard for operations and business teams with real-time data, charts and reporting modules.",
-      tags: ["React.js", "TypeScript", "Charts"],
+        "A Backend-for-Frontend built with Next.js Route Handlers that connects backend and external services, handles common business logic and routes gRPC calls.",
+      tags: ["Next.js", "Route Handlers", "gRPC"],
+      categories: ["Architecture"],
+      visual: { kind: "diagram", clients: ["Web", "PWA"], hub: "BFF (Route Handlers)", backend: "Services & gRPC" },
+    },
+    {
+      name: "FITSHOP",
+      description:
+        "The FITPASS membership platform, rebuilt on the Next.js App Router using Server Components and Server Actions.",
+      tags: ["Next.js App Router", "Server Components", "Server Actions"],
+      categories: ["Web App", "Architecture"],
+      visual: { kind: "icon", icon: ShoppingBag },
+    },
+    {
+      name: "Nutrition Dashboard",
+      description:
+        "A JSON-driven UI used by 20+ dietitians to manage plans for 60,000+ users, with Aghora integration for real-time dietitian chat, scheduled calls, audio calls and chat history migration.",
+      tags: ["React.js", "JSON-driven UI", "Real-time"],
       categories: ["Web App"],
       visual: { kind: "icon", icon: LayoutDashboard },
     },
     {
-      name: "Performance Optimization",
+      name: "Liveness Verification",
       description:
-        "Improved app loading speed, bundle size and Core Web Vitals through code splitting, caching and rendering optimizations.",
-      tags: ["Performance", "Web Vitals", "React.js"],
-      categories: ["Performance"],
-      visual: { kind: "score", score: 95, label: "Performance" },
+        "A flow using TensorFlow Face Landmarks Detection to verify users before booking, plus QR scanning for gym workout attendance.",
+      tags: ["TensorFlow", "Face Landmarks", "QR Scanning"],
+      categories: ["AI"],
+      visual: { kind: "icon", icon: ScanFace },
+    },
+    {
+      name: "QTickets",
+      description:
+        "A multi-region ticket booking platform for movies, events and sports, with seat selection, checkout, REST API integration and the Doha Bank payment gateway. Built at Elite Mindz.",
+      tags: ["React.js", "REST APIs", "Payments"],
+      categories: ["Web App"],
+      visual: { kind: "icon", icon: Ticket },
+    },
+    {
+      name: "LOGITRACK",
+      description:
+        "An IoT dashboard for live shipment tracking, built with React.js, TypeScript and REST APIs at Enbake Consulting.",
+      tags: ["React.js", "TypeScript", "IoT"],
+      categories: ["Web App"],
+      visual: { kind: "icon", icon: Truck },
     },
     {
       name: "AI Portfolio Assistant",
       description:
         "This site: a portfolio you can chat with. Built with Next.js, Tailwind CSS, shadcn/ui, the Vercel AI SDK and Google's Gemma/Gemini models, with answers grounded in portfolio data and optional Google Search.",
       tags: ["Next.js", "AI SDK", "Tailwind CSS"],
-      categories: ["Web App"],
+      categories: ["Web App", "AI"],
       visual: { kind: "icon", icon: Sparkles },
       githubUrl: "https://github.com/iayushpathak-dev/common-portfolio",
     },
@@ -246,12 +311,12 @@ export const PORTFOLIO = {
 
   /* ───────────── Site copy ───────────── */
   seo: {
-    title: "Ayush Pathak — Senior Frontend Developer",
+    title: "Ayush Pathak — Senior Frontend Engineer",
     description:
       "I build scalable, high-performance web applications using React.js, Next.js and modern frontend technologies. Ask my AI assistant about my experience, projects and skills.",
   },
 
-  // Every page of the site. Home is the AI assistant for now.
+  // Every page of the site.
   pages: {
     home: { label: "Home", href: "/", icon: House },
     about: { label: "About", href: "/about", icon: User },
@@ -259,7 +324,7 @@ export const PORTFOLIO = {
     experience: { label: "Experience", href: "/experience", icon: Briefcase },
     blog: { label: "Blog", href: "/blog", icon: Newspaper },
     resume: { label: "Resume", href: "/resume", icon: FileText },
-    assistant: { label: "AI Assistant", href: "/", icon: Sparkles },
+    assistant: { label: "AI Assistant", href: "/assistant", icon: Sparkles },
   },
 
   header: {
@@ -363,16 +428,57 @@ export const PORTFOLIO = {
     modelNote: "Auto-selects between my knowledge and web search based on your question.",
   },
 
+  homePage: {
+    availability: "Available for new opportunities",
+    greeting: "Hi, I'm",
+    intro:
+      "I build production React.js and Next.js applications, with a focus on frontend architecture, performance and SEO. I enjoy solving complex problems and shipping products that deliver real user impact.",
+    handwrittenNote: "Frontend Engineer",
+    viewWork: "View My Work",
+    downloadResume: "Download Resume (PDF)",
+    downloadResumeShort: "Download Resume",
+    connect: "Let's Connect",
+    techStack: ["React.js", "Next.js", "TypeScript", "JavaScript", "Tailwind CSS", "React Query"],
+    // Decorative code card next to the photo.
+    codeLines: [
+      "const developer = {",
+      '  name: "Ayush",',
+      '  skills: ["React", "Next.js", "TypeScript"],',
+      '  focus: "Scalable Products",',
+      "  alwaysLearning: true,",
+      "}",
+    ],
+    whatIDo: [
+      { title: "Build Products", text: "Turn ideas into scalable web applications.", icon: Blocks },
+      { title: "Solve Problems", text: "Design clean and efficient solutions.", icon: Lightbulb },
+      { title: "Optimize Performance", text: "Focus on speed, SEO and Core Web Vitals.", icon: Zap },
+      { title: "Collaborate", text: "Work with cross-functional teams to ship to production.", icon: Users },
+    ],
+    featuredTitle: "Featured Projects",
+    featuredSubtitle: "Some of the products I've worked on",
+    viewAllProjects: "View All Projects",
+    featuredCount: 3,
+    blogTitle: "Latest Blog Posts",
+    blogSubtitle: "Thoughts, tutorials and learning notes",
+    viewAllPosts: "View All Posts",
+    postsCount: 3,
+    careerTitle: "Career Journey",
+    viewAll: "View All",
+  },
+
+  assistantPage: {
+    seoTitle: "AI Assistant — Ayush Pathak",
+    seoDescription: "Chat with an AI assistant that answers questions about Ayush Pathak's experience, projects and skills.",
+  },
+
   resumePage: {
     title: "Resume",
     seoTitle: "Resume — Ayush Pathak",
-    seoDescription: "Resume of Ayush Pathak, Senior Frontend Developer: experience, skills, education and projects.",
+    seoDescription: "Resume of Ayush Pathak, Senior Frontend Engineer: experience, skills, education and projects.",
     summaryTitle: "Professional Summary",
     highlightsTitle: "Key Highlights",
     skillsTitle: "Technical Skills",
     educationTitle: "Education",
-    certificationsTitle: "Certifications",
-    certificationsNote: "(Optional)",
     experienceTitle: "Professional Experience",
     keyTechnologies: "Key Technologies",
     actionsTitle: "Resume Actions",
@@ -380,9 +486,9 @@ export const PORTFOLIO = {
     preview: "View Resume (Preview)",
     print: "Print Resume",
     lastUpdatedLabel: "Last Updated",
-    lastUpdated: "October 2026",
+    lastUpdated: "August 2026",
     fileSizeLabel: "File Size",
-    fileSize: "245 KB",
+    fileSize: "272 KB",
     quickInfoTitle: "Quick Info",
     quickInfo: {
       experience: "Experience",
@@ -397,7 +503,7 @@ export const PORTFOLIO = {
 
   aboutPage: {
     seoTitle: "About — Ayush Pathak",
-    seoDescription: "About Ayush Pathak, Senior Frontend Developer: my story, what I do and what I value.",
+    seoDescription: "About Ayush Pathak, Senior Frontend Engineer: my story, what I do and what I value.",
     eyebrow: "About Me",
     intro:
       "I'm a frontend developer who enjoys building scalable, high-performance web applications using React.js, Next.js and modern technologies. I love solving real world problems, learning new tech and creating products that make an impact.",
@@ -405,7 +511,7 @@ export const PORTFOLIO = {
     availability: "Open to Opportunities",
     storyTitle: "My Story",
     story: [
-      "I started my career with a curiosity for how things work on the web. Over the years, I've worked on product applications, PWA platforms, corporate integrations and performance optimization, gaining hands-on experience in building scalable frontend systems.",
+      "I started in 2020 at Magic Software, building interactive EdTech modules with React.js and HTML5. Since then I've built LOGITRACK, an IoT shipment-tracking dashboard, and QTickets, a multi-region ticket booking platform. At FITPASS I build fitpass.co.in, the BFF layer, FITSHOP, Partners Studio and the Nutrition Dashboard.",
       "I enjoy working on complex problems, learning new technologies and collaborating with cross-functional teams to deliver high-quality products.",
     ],
     whatIDoTitle: "What I Do",
@@ -452,7 +558,7 @@ export const PORTFOLIO = {
     description:
       "A few selected projects that showcase my experience in building real world applications, solving complex problems and creating great user experiences.",
     allLabel: "All",
-    filters: ["Web App", "PWA", "Architecture", "Performance"],
+    filters: ["Web App", "PWA", "Architecture", "Performance", "AI"],
     featuredLabel: "Featured",
     caseStudy: "View Case Study",
     github: "GitHub",
@@ -475,7 +581,7 @@ export const PORTFOLIO = {
 
 /** The factual part of the portfolio, serialised into the AI's instructions. */
 export function portfolioContext() {
-  const { profile, highlights, experience, skillGroups, education, certifications, projects } = PORTFOLIO
+  const { profile, highlights, experience, skillGroups, education, projects } = PORTFOLIO
   return JSON.stringify(
     {
       profile,
@@ -483,7 +589,6 @@ export function portfolioContext() {
       experience,
       skills: skillGroups,
       education,
-      certifications,
       projects: projects.map(({ name, description, tags }) => ({ name, description, tags })),
     },
     null,

@@ -132,7 +132,7 @@ function ProjectVisual({ project }: { project: Project }) {
             />
           </svg>
           <div className="text-center">
-            <p className="text-2xl font-bold">{visual.score}</p>
+            <p className="text-2xl font-bold">{visual.display}</p>
             <p className="text-[10px] text-muted-foreground">{visual.label}</p>
           </div>
         </div>
@@ -143,6 +143,17 @@ function ProjectVisual({ project }: { project: Project }) {
   return (
     <div className={visualFrame} aria-hidden="true">
       <visual.icon className="size-16 text-blue-400 drop-shadow-[0_0_20px_rgb(96_165_250/0.5)]" />
+    </div>
+  )
+}
+
+/** The first `count` projects, for the home page (project data can't cross the server boundary). */
+export function FeaturedProjects({ count }: { count: number }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {projects.slice(0, count).map((project) => (
+        <ProjectCard key={project.name} project={project} />
+      ))}
     </div>
   )
 }

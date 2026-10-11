@@ -179,3 +179,14 @@ function PostCard({ post }: { post: Post }) {
     </article>
   )
 }
+
+/** The `count` most recent posts, for the home page. */
+export function LatestPosts({ count }: { count: number }) {
+  return (
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {posts.slice(0, count).map((post) => (
+        <PostCard key={post.title} post={post} />
+      ))}
+    </div>
+  )
+}

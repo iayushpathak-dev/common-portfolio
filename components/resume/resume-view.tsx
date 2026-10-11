@@ -1,5 +1,4 @@
 import {
-  Award,
   Briefcase,
   Building,
   Download,
@@ -26,7 +25,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
-const { profile, highlights, experience, skillGroups, education, certifications, resumePage: copy, sidebar } = PORTFOLIO
+const { profile, highlights, experience, skillGroups, education, resumePage: copy, sidebar } = PORTFOLIO
 
 const TABS = (["summary", "skills", "experience", "education"] as const).map((key) => ({ key, label: copy.tabs[key] }))
 
@@ -49,7 +48,7 @@ export function ResumeView() {
               <Skills />
             </TabPanel>
             <TabPanel tab="education" className="grid">
-              <EducationAndCertifications />
+              <Education />
             </TabPanel>
           </div>
           <TabPanel tab="experience" className="grid">
@@ -175,7 +174,7 @@ function Skills() {
   )
 }
 
-function EducationAndCertifications() {
+function Education() {
   return (
     <section className={card}>
       <SectionTitle icon={GraduationCap}>{copy.educationTitle}</SectionTitle>
@@ -186,25 +185,8 @@ function EducationAndCertifications() {
             <div className="min-w-0 text-sm">
               <p className="font-medium">{e.degree}</p>
               <p className="text-xs text-muted-foreground">{e.place}</p>
-              <p className="text-xs text-muted-foreground">{e.period}</p>
+              {e.period && <p className="text-xs text-muted-foreground">{e.period}</p>}
             </div>
-          </li>
-        ))}
-      </ul>
-
-      <h2 className="mt-5 mb-3 flex items-center gap-2.5 text-lg font-semibold">
-        <Award className="size-5 text-amber-500" />
-        {copy.certificationsTitle}
-        <span className="text-xs font-normal text-muted-foreground">{copy.certificationsNote}</span>
-      </h2>
-      <ul className="flex flex-col gap-2 text-sm">
-        {certifications.map((c) => (
-          <li key={c.name} className="flex items-center justify-between gap-3">
-            <span className="min-w-0">{c.name}</span>
-            <span className="flex shrink-0 items-center gap-1.5 text-xs text-muted-foreground">
-              <span className={cn("size-1.5 rounded-full", c.status === "Completed" ? "bg-success" : "bg-amber-500")} />
-              {c.status}
-            </span>
           </li>
         ))}
       </ul>

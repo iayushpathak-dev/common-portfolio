@@ -1,14 +1,10 @@
-import { Assistant } from "@/components/assistant/assistant";
-import { MobileNav } from "@/components/mobile-nav";
-import { SiteHeader } from "@/components/site-header";
-import { GEMINI_MODEL } from "@/lib/model";
+import { HomeView } from "@/components/home/home-view";
+import { PageShell } from "@/components/page-shell";
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex h-dvh flex-col">
-      <SiteHeader />
-      <Assistant modelId={GEMINI_MODEL} online={Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY)} />
-      <MobileNav />
-    </div>
+    <PageShell sidebar={false}>
+      <HomeView />
+    </PageShell>
   );
 }
