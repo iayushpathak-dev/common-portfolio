@@ -1,11 +1,15 @@
-# CI: runs on every push to main and every pull request.
-# Vercel handles deployment (CD) separately through its GitHub integration.
+# CI: runs only for the `production` branch.
+#  - pull_request: checks a PR into production before you merge it
+#  - push: runs again after the merge lands on production
+# Day-to-day work on main (or any other branch) does not trigger it.
+# Vercel deploys production separately (see vercel.json).
 name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [production]
   pull_request:
+    branches: [production]
 
 # A newer push to the same branch cancels the older, still-running check.
 concurrency:
