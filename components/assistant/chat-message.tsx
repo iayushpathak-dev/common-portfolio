@@ -1,13 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { Check, Copy, Globe, ThumbsDown, ThumbsUp, User } from "lucide-react"
+import { BookOpen, Check, Copy, FileText, Globe, Lightbulb, SearchX, ThumbsDown, ThumbsUp, User } from "lucide-react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 
 import { Button } from "@/components/ui/button"
-import type { AssistantMessage } from "@/lib/chat-modes"
+import { sourceKind, type AssistantMessage } from "@/lib/chat-modes"
 import { PORTFOLIO } from "@/lib/portfolio"
+import { SITE_URL } from "@/lib/site"
 import { cn } from "@/lib/utils"
 
 export function messageText(message: AssistantMessage) {
@@ -54,6 +55,8 @@ export function ChatMessage({ message, streaming }: { message: AssistantMessage;
           <TypingDots />
         )}
 
+        <RouteLabel route={message.metadata?.route} />
+
         {message.metadata?.searchUnavailable && (
           <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Globe className="size-3.5" /> {PORTFOLIO.chat.searchUnavailable}
@@ -62,18 +65,21 @@ export function ChatMessage({ message, streaming }: { message: AssistantMessage;
 
         {sources.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
-            {sources.map((s) => (
-              <a
-                key={s.sourceId}
-                href={s.url}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex max-w-56 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
-              >
-                <Globe className="size-3 shrink-0" />
-                <span className="truncate">{s.title ?? hostname(s.url)}</span>
-              </a>
-            ))}
+            {sources.map((s) => {
+              const internal = isOwnSite(s.url)
+              const Icon = internal ? FileText : Globe
+              return (
+                <a
+                  key={s.sourceId}
+                  href={internal ? new URL(s.url).pathname : s.url}
+                  {...(internal ? {} : { target: "_blank", rel: "noreferrer" })}
+                  className="inline-flex max-w-64 items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs text-muted-foreground hover:text-foreground"
+                >
+                  <Icon className="size-3 shrink-0" />
+                  <span className="truncate">{s.title ?? hostname(s.url)}</span>
+                </a>
+              )
+            })}
           </div>
         )}
 
@@ -149,6 +155,30 @@ function MessageActions({ text, createdAt }: { text: string; createdAt?: number 
       )}
     </div>
   )
+}
+
+const ROUTE_ICONS = { portfolio: BookOpen, web: Globe, general: Lightbulb, none: SearchX }
+
+/** Says where an answer came from: my portfolio, the web, general model knowledge, or nothing. */
+function RouteLabel({ route }: { route: Parameters<typeof sourceKind>[0] }) {
+  const kind = sourceKind(route)
+  if (!kind) return null
+  const Icon = ROUTE_ICONS[kind]
+  return (
+    <p className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+      <Icon className="size-3.5" /> {PORTFOLIO.chat.routeLabels[kind]}
+    </p>
+  )
+}
+
+/** Portfolio sources point at this site; open them in the same tab. */
+function isOwnSite(url: string) {
+  try {
+    const host = new URL(url).hostname
+    return host === new URL(SITE_URL).hostname || (typeof window !== "undefined" && host === window.location.hostname)
+  } catch {
+    return false
+  }
 }
 
 function hostname(url: string) {

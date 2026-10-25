@@ -1,15 +1,15 @@
-import type { Metadata } from "next";
-
 import { Assistant } from "@/components/assistant/assistant";
 import { MobileNav } from "@/components/mobile-nav";
 import { SiteHeader } from "@/components/site-header";
 import { GEMINI_MODEL } from "@/lib/model";
 import { PORTFOLIO } from "@/lib/portfolio";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: PORTFOLIO.assistantPage.seoTitle,
   description: PORTFOLIO.assistantPage.seoDescription,
-};
+  path: "/assistant",
+});
 
 export default function AssistantPage() {
   return (

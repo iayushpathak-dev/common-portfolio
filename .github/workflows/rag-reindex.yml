@@ -1,0 +1,39 @@
+# Reindexes the AI assistant's knowledge base after every successful production deployment,
+# so newly published (or unpublished) content is reflected in retrieval.
+#
+# Vercel reports deployments to GitHub; this runs when a Production deployment succeeds.
+# It can also be started by hand from the Actions tab.
+#
+# Required repository settings:
+#   - Secret   RAG_ADMIN_SECRET  (same value as in the Vercel project)
+#   - Variable SITE_URL          (e.g. https://ayushpathak.co.in)
+name: Reindex AI knowledge base
+
+on:
+  deployment_status:
+  workflow_dispatch:
+
+concurrency:
+  group: rag-reindex
+  cancel-in-progress: false
+
+jobs:
+  reindex:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.deployment_status.state == 'success' && github.event.deployment.environment == 'Production')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Reindex
+        env:
+          RAG_ADMIN_SECRET: ${{ secrets.RAG_ADMIN_SECRET }}
+        run: node scripts/rag-reindex.mjs "${{ vars.SITE_URL }}"

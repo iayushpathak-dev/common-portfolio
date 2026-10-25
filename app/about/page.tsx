@@ -1,17 +1,19 @@
-import type { Metadata } from "next";
-import { BookOpen, Briefcase, Building, CircleCheck, Heart, MapPin, Quote, Rocket, UserRound } from "lucide-react";
+import { BookOpen, Briefcase, Building, CircleCheck, Heart, MapPin, Quote, Rocket, Sparkles, UserRound } from "lucide-react";
 
 import { PageShell } from "@/components/page-shell";
 import { card, SectionTitle } from "@/components/page-ui";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { EvidenceBadge } from "@/components/content/content-badges";
 import { PORTFOLIO } from "@/lib/portfolio";
+import { pageMetadata } from "@/lib/seo";
 
-const { profile, experience, aboutPage: copy, resumePage, hero } = PORTFOLIO;
+const { profile, experience, aiJourney, aboutPage: copy, resumePage, hero } = PORTFOLIO;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: copy.seoTitle,
   description: copy.seoDescription,
-};
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (
@@ -30,6 +32,7 @@ export default function AboutPage() {
             </section>
             <TileSection title={copy.whatIDoTitle} icon={Rocket} items={copy.whatIDo} />
           </div>
+          <LearningJourney />
           <TileSection title={copy.valuesTitle} icon={Heart} items={copy.values} />
         </div>
 
@@ -101,6 +104,22 @@ function TileSection({
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+function LearningJourney() {
+  return (
+    <section className={card}>
+      <SectionTitle icon={Sparkles}>{copy.aiTitle}</SectionTitle>
+      <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+        {aiJourney.map(({ topic, status }) => (
+          <li key={topic} className="flex flex-col gap-1.5 rounded-xl border bg-background/40 p-3">
+            <span className="text-sm font-medium">{topic}</span>
+            <EvidenceBadge label={status} />
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }

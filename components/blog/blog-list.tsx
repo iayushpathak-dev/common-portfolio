@@ -2,16 +2,18 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, Search, Sparkles, X } from "lucide-react"
+import { ArrowRight, CalendarClock, Search, Sparkles, X } from "lucide-react"
 
+import { DraftBadge, EvidenceBadge } from "@/components/content/content-badges"
+import { ContentIcon } from "@/components/content/content-icon"
 import { card, Chip, PageIntro } from "@/components/page-ui"
+import type { ArticleSummary } from "@/content"
+import { trackEvent, useTrackSearch } from "@/lib/analytics"
 import { askAssistantHref } from "@/lib/nav"
 import { PORTFOLIO } from "@/lib/portfolio"
-import { cn } from "@/lib/utils"
+import { cn, formatDate } from "@/lib/utils"
 
-const { posts, pages, blogPage: copy } = PORTFOLIO
-
-type Post = (typeof posts)[number]
+const { pages, blogPage: copy } = PORTFOLIO
 
 function BlogSearch({ query, onQuery }: { query: string; onQuery: (q: string) => void }) {
   return (
@@ -71,65 +73,89 @@ export function FilterPills({
 }
 
 /** The search box sits in the page intro, so this renders the intro too and owns all filter state. */
-export function BlogBrowser() {
+export function BlogBrowser({ articles }: { articles: ArticleSummary[] }) {
   const [query, setQuery] = useState("")
   const [category, setCategory] = useState<string | null>(null)
+  const categories = [...new Set(articles.map((a) => a.category))]
 
   const q = query.trim().toLowerCase()
-  const visible = posts.filter(
-    (post) =>
-      (category === null || (post.categories as readonly string[]).includes(category)) &&
-      (q === "" || [post.title, post.excerpt, ...post.tags].some((text) => text.toLowerCase().includes(q))),
+  const matching = articles.filter(
+    (a) =>
+      (category === null || a.category === category) &&
+      (q === "" || [a.title, a.summary, a.category, ...a.tags].some((text) => text.toLowerCase().includes(q))),
   )
-  const featured = visible.find((p) => "featured" in p && p.featured)
-  const rest = visible.filter((p) => p !== featured)
+  const written = matching.filter((a) => a.href !== null)
+  const planned = matching.filter((a) => a.publicationStatus === "planned")
+  const featured = written.find((a) => a.featured)
+  const rest = written.filter((a) => a !== featured)
+  useTrackSearch(query, "blog", matching.length)
+
+  function selectCategory(next: string | null) {
+    setCategory(next)
+    trackEvent("filter_select", { filter_location: "blog", filter_value: next ?? "all" })
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <PageIntro icon={pages.blog.icon} title={copy.title} subtitle={copy.subtitle} description={copy.description}>
         <BlogSearch query={query} onQuery={setQuery} />
       </PageIntro>
-      <FilterPills options={copy.categories} allLabel={copy.allLabel} value={category} onChange={setCategory} />
+      <FilterPills options={categories} allLabel={copy.allLabel} value={category} onChange={selectCategory} />
 
-      {visible.length === 0 ? (
-        <p className={cn(card, "text-center text-sm text-muted-foreground")}>{copy.empty}</p>
-      ) : (
-        <>
-          {featured && <FeaturedPost post={featured} />}
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {rest.map((post) => (
-              <PostCard key={post.title} post={post} />
-            ))}
-          </div>
-        </>
+      {matching.length === 0 && (
+        <p className={cn(card, "text-center text-sm text-muted-foreground")}>
+          {articles.length === 0 ? copy.noArticlesYet : copy.empty}
+        </p>
       )}
+
+      {featured && <FeaturedPost post={featured} />}
+      {rest.length > 0 && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {rest.map((post) => (
+            <PostCard key={post.id} post={post} />
+          ))}
+        </div>
+      )}
+
+      {planned.length > 0 && <PlannedTopics posts={planned} />}
     </div>
   )
 }
 
-function PostLink({ post }: { post: Post }) {
-  const href = "url" in post && typeof post.url === "string" ? post.url : null
+function PostLink({ post }: { post: ArticleSummary }) {
   const cls = "inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline dark:text-blue-300"
-  return href ? (
-    <a href={href} className={cls}>
-      {copy.readArticle} <ArrowRight className="size-4" />
-    </a>
-  ) : (
-    <Link href={askAssistantHref(`${copy.askPrompt} ${post.title}`)} className={cls}>
-      <Sparkles className="size-4" /> {copy.askAi}
-    </Link>
+  return (
+    <div className="flex flex-wrap gap-x-4 gap-y-2">
+      {post.href && (
+        <Link href={post.href} className={cls}>
+          {copy.readArticle} <ArrowRight className="size-4" />
+        </Link>
+      )}
+      <Link href={askAssistantHref(`${copy.askPrompt} ${post.title}`)} className={cls}>
+        <Sparkles className="size-4" /> {copy.askAi}
+      </Link>
+    </div>
   )
 }
 
-function Meta({ post }: { post: Post }) {
+function Meta({ post }: { post: ArticleSummary }) {
   return (
     <p className="text-xs text-muted-foreground">
-      {post.date} · {post.readMinutes} {copy.minRead}
+      {post.category} · {formatDate(post.updatedAt)} · {post.readMinutes} {copy.minRead}
     </p>
   )
 }
 
-function FeaturedPost({ post }: { post: Post }) {
+function Badges({ post }: { post: ArticleSummary }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      <EvidenceBadge label={post.learningStatus} />
+      <DraftBadge status={post.publicationStatus} />
+    </div>
+  )
+}
+
+function FeaturedPost({ post }: { post: ArticleSummary }) {
   return (
     <article className="grid gap-4 overflow-hidden rounded-2xl border border-primary/40 bg-linear-to-br from-hero-from to-hero-to p-5 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] lg:p-6">
       <div className="flex min-w-0 flex-col gap-2">
@@ -138,7 +164,8 @@ function FeaturedPost({ post }: { post: Post }) {
         </span>
         <h2 className="text-xl font-semibold lg:text-2xl">{post.title}</h2>
         <Meta post={post} />
-        <p className="text-sm text-foreground/80">{post.excerpt}</p>
+        <Badges post={post} />
+        <p className="text-sm text-foreground/80">{post.summary}</p>
         <div className="flex flex-wrap gap-1.5">
           {post.tags.map((t) => (
             <Chip key={t}>{t}</Chip>
@@ -149,27 +176,28 @@ function FeaturedPost({ post }: { post: Post }) {
         </div>
       </div>
       <div className="grid min-h-40 place-items-center rounded-xl border bg-background/30">
-        <post.icon className="size-24 text-blue-400 drop-shadow-[0_0_24px_rgb(96_165_250/0.6)]" />
+        <ContentIcon name={post.icon} className="size-24 text-blue-400 drop-shadow-[0_0_24px_rgb(96_165_250/0.6)]" />
       </div>
     </article>
   )
 }
 
-function PostCard({ post }: { post: Post }) {
+function PostCard({ post }: { post: ArticleSummary }) {
   return (
     <article className={cn(card, "flex flex-col gap-3")}>
       <div className="flex items-start gap-3">
         <span className="grid size-14 shrink-0 place-items-center rounded-xl border bg-linear-to-br from-hero-from to-hero-to">
-          <post.icon className="size-7 text-violet-500 dark:text-violet-300" />
+          <ContentIcon name={post.icon} className="size-7 text-violet-500 dark:text-violet-300" />
         </span>
         <div className="min-w-0">
           <h2 className="font-semibold">{post.title}</h2>
           <Meta post={post} />
         </div>
       </div>
-      <p className="text-sm text-foreground/80">{post.excerpt}</p>
+      <Badges post={post} />
+      <p className="text-sm text-foreground/80">{post.summary}</p>
       <div className="flex flex-wrap gap-1.5">
-        {post.tags.map((t) => (
+        {post.tags.slice(0, 4).map((t) => (
           <Chip key={t}>{t}</Chip>
         ))}
       </div>
@@ -180,12 +208,34 @@ function PostCard({ post }: { post: Post }) {
   )
 }
 
-/** The `count` most recent posts, for the home page. */
-export function LatestPosts({ count }: { count: number }) {
+function PlannedTopics({ posts }: { posts: ArticleSummary[] }) {
+  return (
+    <section className={card} aria-labelledby="planned-topics">
+      <h2 id="planned-topics" className="mb-1 flex items-center gap-2 font-semibold">
+        <CalendarClock className="size-5 text-violet-500 dark:text-violet-300" /> {copy.plannedTitle}
+      </h2>
+      <p className="mb-3 text-sm text-muted-foreground">{copy.plannedSubtitle}</p>
+      <ul className="grid gap-2 md:grid-cols-2">
+        {posts.map((post) => (
+          <li key={post.id} className="flex items-start gap-3 rounded-xl border bg-background/40 p-3">
+            <ContentIcon name={post.icon} className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
+            <div className="min-w-0">
+              <p className="text-sm font-medium">{post.title}</p>
+              <p className="text-xs text-muted-foreground">{post.summary}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+/** Article cards for the home page. */
+export function LatestPosts({ posts }: { posts: ArticleSummary[] }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {posts.slice(0, count).map((post) => (
-        <PostCard key={post.title} post={post} />
+      {posts.map((post) => (
+        <PostCard key={post.id} post={post} />
       ))}
     </div>
   )

@@ -1,30 +1,48 @@
 import Link from "next/link"
-import { ArrowRight, Briefcase, Code, Download, FolderOpen, GraduationCap, MessageSquare, Newspaper, Quote } from "lucide-react"
+import { ArrowRight, Briefcase, Code, Download, FolderOpen, GraduationCap, Mail, MessageSquare, Newspaper, Quote, Sparkles } from "lucide-react"
 
 import { LatestPosts } from "@/components/blog/blog-list"
+import { EvidenceBadge } from "@/components/content/content-badges"
 import { FeaturedProjects } from "@/components/projects/project-browser"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { toArticleSummary, toProjectSummary, visibleArticles, visibleProjects } from "@/content"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
-const { profile, highlights, experience, education, pages, homePage: copy } = PORTFOLIO
+const { profile, highlights, experience, education, aiJourney, pages, homePage: copy } = PORTFOLIO
 
 export function HomeView() {
+  const projects = visibleProjects()
+  const featuredProjects = [...projects.filter((p) => p.featured), ...projects.filter((p) => !p.featured)]
+    .slice(0, copy.featuredCount)
+    .map(toProjectSummary)
+  const written = visibleArticles().filter((a) => a.publicationStatus !== "planned")
+  const featuredPosts = [...written.filter((a) => a.featured), ...written.filter((a) => !a.featured)]
+    .slice(0, copy.postsCount)
+    .map(toArticleSummary)
+
   return (
     <div className="flex flex-col gap-8 lg:gap-10">
       <Hero />
       <WhatIDo />
 
       <Section icon={FolderOpen} title={copy.featuredTitle} subtitle={copy.featuredSubtitle} href={pages.projects.href} linkLabel={copy.viewAllProjects}>
-        <FeaturedProjects count={copy.featuredCount} />
+        <FeaturedProjects projects={featuredProjects} />
       </Section>
 
       <div className="grid gap-8 lg:gap-10 xl:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
-        <Section icon={Newspaper} title={copy.blogTitle} subtitle={copy.blogSubtitle} href={pages.blog.href} linkLabel={copy.viewAllPosts}>
-          <LatestPosts count={copy.postsCount} />
-        </Section>
+        <div className="flex min-w-0 flex-col gap-8 lg:gap-10">
+          <AiJourney />
+          {featuredPosts.length > 0 && (
+            <Section icon={Newspaper} title={copy.blogTitle} subtitle={copy.blogSubtitle} href={pages.blog.href} linkLabel={copy.viewAllPosts}>
+              <LatestPosts posts={featuredPosts} />
+            </Section>
+          )}
+        </div>
         <CareerJourney />
       </div>
+
+      <Contact />
 
       <figure className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-linear-to-r from-hero-from to-hero-to px-5 py-4 sm:flex-row sm:items-center sm:gap-4">
         <Quote className="size-7 shrink-0 text-success" />
@@ -52,6 +70,7 @@ function Hero() {
                 <span className="bg-linear-to-r from-blue-500 to-violet-500 bg-clip-text text-transparent">{profile.name}</span>
               </h1>
               <p className="mt-2 text-lg text-foreground/85 sm:text-2xl">{profile.role}</p>
+              <p className="mt-1 text-base font-medium text-foreground/90 sm:text-lg">{copy.headline}</p>
             </div>
             {/* On phones and tablets the photo sits beside the heading. */}
             <HeroAvatar className="size-20 sm:size-28 lg:hidden" />
@@ -220,5 +239,59 @@ function CareerJourney() {
         ))}
       </ol>
     </Section>
+  )
+}
+
+function AiJourney() {
+  return (
+    <Section icon={Sparkles} title={copy.aiTitle} subtitle={copy.aiSubtitle} href={pages.assistant.href} linkLabel={copy.aiCta}>
+      <div className="rounded-2xl border bg-card p-4 lg:p-5">
+        <p className="text-sm leading-relaxed text-foreground/85">{profile.aiFocus}</p>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          {aiJourney.map(({ topic, status }) => (
+            <li key={topic} className="flex flex-col gap-1.5 rounded-xl border bg-background/40 p-3">
+              <span className="text-sm font-medium">{topic}</span>
+              <EvidenceBadge label={status} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
+  )
+}
+
+function Contact() {
+  const links = [pages.projects, pages.blog, pages.experience, pages.resume, pages.assistant]
+  const buttonBase = "inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
+
+  return (
+    <section aria-labelledby="contact" className="grid gap-6 rounded-3xl border bg-linear-to-br from-hero-from to-hero-to p-5 sm:p-8 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+      <div>
+        <h2 id="contact" className="text-xl font-semibold sm:text-2xl">
+          {copy.contactTitle}
+        </h2>
+        <p className="mt-2 max-w-xl text-sm text-foreground/80">{copy.contactText}</p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <a href={profile.contact.linkedin} target="_blank" rel="noreferrer" className={cn(buttonBase, "bg-primary text-primary-foreground hover:bg-primary/85")}>
+            <MessageSquare className="size-4" /> {copy.connect}
+          </a>
+          <a href={`mailto:${profile.contact.email}`} className={cn(buttonBase, "border bg-card/60 hover:bg-muted")}>
+            <Mail className="size-4" /> {copy.contactEmail}
+          </a>
+        </div>
+      </div>
+      <nav aria-label={copy.exploreTitle}>
+        <h3 className="mb-3 text-sm font-medium text-muted-foreground">{copy.exploreTitle}</h3>
+        <ul className="grid grid-cols-2 gap-2">
+          {links.map(({ label, href, icon: Icon }) => (
+            <li key={href}>
+              <Link href={href} className="flex items-center gap-2 rounded-xl border bg-card/60 px-3 py-2.5 text-sm hover:bg-muted">
+                <Icon className="size-4 text-violet-500 dark:text-violet-300" /> {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </section>
   )
 }

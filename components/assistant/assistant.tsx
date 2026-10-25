@@ -13,8 +13,9 @@ import { HeroCard } from "@/components/assistant/hero-card"
 import { InsightsPanel } from "@/components/assistant/insights-panel"
 import { NavRail } from "@/components/nav-rail"
 import { Button } from "@/components/ui/button"
+import { trackEvent } from "@/lib/analytics"
 import { getChat, saveChat, useChatHistory, type StoredChat } from "@/lib/chat-history"
-import { CHAT_MODES, type AssistantMessage, type ChatMode } from "@/lib/chat-modes"
+import { CHAT_MODES, sourceKind, type AssistantMessage, type ChatMode } from "@/lib/chat-modes"
 import { PORTFOLIO } from "@/lib/portfolio"
 
 export function Assistant({ modelId, online }: { modelId: string; online: boolean }) {
@@ -41,7 +42,7 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
 
   const busy = status === "submitted" || status === "streaming"
   const lastAssistant = messages.findLast((m) => m.role === "assistant")
-  const usedWeb = lastAssistant?.parts.some((p) => p.type === "source-url") ?? false
+  const usedWeb = sourceKind(lastAssistant?.metadata?.route) === "web"
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" })
@@ -58,6 +59,7 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
   function send(text: string) {
     if (busy) return
     sendMessage({ text }, { body: { mode } })
+    trackEvent("chat_message_sent", { chat_mode: mode, message_length: text.length, source: "composer" })
   }
 
   // Links from other pages arrive as ?new=1, ?chat=<id>, ?mode=<mode> or ?ask=<question>.
@@ -70,7 +72,10 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
     else if (newChat || ask) switchTo(null, [])
 
     // A question from another page (blog post, project) starts a fresh chat with it.
-    if (ask) sendMessage({ text: ask }, { body: { mode: validMode ?? mode } })
+    if (ask) {
+      sendMessage({ text: ask }, { body: { mode: validMode ?? mode } })
+      trackEvent("chat_message_sent", { chat_mode: validMode ?? mode, message_length: ask.length, source: "link" })
+    }
   }
 
   return (
@@ -110,9 +115,7 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
             {error && (
               <div role="alert" className="flex items-center justify-between gap-3 rounded-xl border border-destructive/40 bg-destructive/10 p-3 text-sm">
                 <span>
-                  {online
-                    ? error.message || PORTFOLIO.chat.genericError
-                    : PORTFOLIO.chat.notConfigured}
+                  {online ? friendlyError(error) : PORTFOLIO.chat.notConfigured}
                 </span>
                 <Button size="sm" variant="outline" onClick={() => regenerate({ body: { mode } })}>
                   <RotateCcw /> {PORTFOLIO.chat.retry}
@@ -135,6 +138,15 @@ export function Assistant({ modelId, online }: { modelId: string; online: boolea
       </Suspense>
     </div>
   )
+}
+
+/** Error responses are JSON ({ error }); stream errors are already plain, safe text. */
+function friendlyError(error: Error) {
+  try {
+    const parsed = JSON.parse(error.message) as { error?: unknown }
+    if (typeof parsed.error === "string") return parsed.error
+  } catch {}
+  return error.message || PORTFOLIO.chat.genericError
 }
 
 type UrlIntentParams = { newChat: boolean; chatId: string | null; mode: string | null; ask: string | null }

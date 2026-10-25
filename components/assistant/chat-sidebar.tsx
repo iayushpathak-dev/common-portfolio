@@ -5,6 +5,7 @@ import { History, MessageSquare, Plus, Search, Sparkles, Trash2 } from "lucide-r
 
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+import { useTrackSearch } from "@/lib/analytics"
 import { deleteChat, timeAgo, type StoredChat } from "@/lib/chat-history"
 import { modeOptions, type ChatMode } from "@/lib/chat-modes"
 import { PORTFOLIO } from "@/lib/portfolio"
@@ -35,6 +36,7 @@ export function ChatSidebar({
   const [query, setQuery] = useState("")
   const [searching, setSearching] = useState(false)
   const visible = chats.filter((c) => c.title.toLowerCase().includes(query.toLowerCase()))
+  useTrackSearch(query, "chat_history", visible.length)
 
   return (
     <aside

@@ -7,12 +7,20 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "rag:reindex": "node --env-file-if-exists=.env.local scripts/rag-reindex.mjs",
+    "rag:eval": "node --env-file-if-exists=.env.local node_modules/vitest/vitest.mjs run tests/eval"
   },
   "dependencies": {
     "@ai-sdk/google": "^4.0.93",
     "@ai-sdk/react": "^4.0.140",
     "@base-ui/react": "^1.9.0",
+    "@next/third-parties": "^16.4.0",
+    "@upstash/ratelimit": "^2.2.0",
+    "@upstash/redis": "^1.39.0",
+    "@upstash/vector": "^1.2.3",
     "ai": "^7.0.137",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
@@ -29,12 +37,13 @@
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^5.0.5"
   }
 }
