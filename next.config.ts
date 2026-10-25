@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },
+      // Article bodies (content/articles/*.md) are imported as plain strings.
+      "*.md": {
+        type: "raw",
+      },
     },
   },
 };

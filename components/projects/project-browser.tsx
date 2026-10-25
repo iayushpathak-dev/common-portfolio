@@ -6,25 +6,30 @@ import { ArrowRight, ArrowRightLeft, Sparkles } from "lucide-react"
 
 import { FilterPills } from "@/components/blog/blog-list"
 import { GithubIcon } from "@/components/brand-icons"
+import { DraftBadge, EvidenceBadge } from "@/components/content/content-badges"
+import { ContentIcon } from "@/components/content/content-icon"
 import { card, Chip, PageIntro } from "@/components/page-ui"
+import type { ProjectSummary } from "@/content"
+import { trackEvent } from "@/lib/analytics"
 import { askAssistantHref } from "@/lib/nav"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
-const { projects, pages, projectsPage: copy } = PORTFOLIO
+const { pages, projectsPage: copy } = PORTFOLIO
 
-type Project = (typeof projects)[number]
-
-export function ProjectBrowser() {
+export function ProjectBrowser({ projects }: { projects: ProjectSummary[] }) {
   const [category, setCategory] = useState<string | null>(null)
-  const visible = projects.filter(
-    (p) => category === null || (p.categories as readonly string[]).includes(category),
-  )
+  const visible = projects.filter((p) => category === null || (p.categories as string[]).includes(category))
+
+  function selectCategory(next: string | null) {
+    setCategory(next)
+    trackEvent("filter_select", { filter_location: "projects", filter_value: next ?? "all" })
+  }
 
   return (
     <div className="flex flex-col gap-4">
       <PageIntro icon={pages.projects.icon} title={copy.title} subtitle={copy.subtitle} description={copy.description}>
-        <FilterPills options={copy.filters} allLabel={copy.allLabel} value={category} onChange={setCategory} />
+        <FilterPills options={copy.filters} allLabel={copy.allLabel} value={category} onChange={selectCategory} />
       </PageIntro>
 
       {visible.length === 0 ? (
@@ -32,7 +37,7 @@ export function ProjectBrowser() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {visible.map((project) => (
-            <ProjectCard key={project.name} project={project} />
+            <ProjectCard key={project.id} project={project} />
           ))}
         </div>
       )}
@@ -40,44 +45,48 @@ export function ProjectBrowser() {
   )
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const featured = "featured" in project && project.featured
-  const caseStudyUrl = "caseStudyUrl" in project && typeof project.caseStudyUrl === "string" ? project.caseStudyUrl : null
-  const githubUrl = "githubUrl" in project ? project.githubUrl : null
+export function ProjectCard({ project }: { project: ProjectSummary }) {
   const buttonBase = "inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors"
 
   return (
-    <article className={cn(card, "flex flex-col gap-3", featured && "border-primary/50")}>
+    <article className={cn(card, "flex flex-col gap-3", project.featured && "border-primary/50")}>
       <div className="relative">
         <ProjectVisual project={project} />
-        {featured && (
+        {project.featured && (
           <span className="absolute top-2 right-2 inline-flex items-center gap-1 rounded-md bg-primary px-2 py-0.5 text-xs font-medium text-primary-foreground">
             <Sparkles className="size-3" /> {copy.featuredLabel}
           </span>
         )}
       </div>
-      <h2 className="text-lg font-semibold">{project.name}</h2>
-      <p className="text-sm text-foreground/80">{project.description}</p>
+      <div className="flex flex-wrap items-center gap-2">
+        <EvidenceBadge label={project.evidence} />
+        <DraftBadge status={project.publicationStatus} />
+      </div>
+      <div>
+        <h2 className="text-lg font-semibold">
+          <Link href={project.href} className="hover:underline">
+            {project.title}
+          </Link>
+        </h2>
+        <p className="text-xs text-muted-foreground">
+          {[project.aka, project.organization].filter(Boolean).join(" · ")}
+        </p>
+      </div>
+      <p className="text-sm text-foreground/80">{project.summary}</p>
       <div className="flex flex-wrap gap-1.5">
-        {project.tags.map((t) => (
+        {project.tags.slice(0, 5).map((t) => (
           <Chip key={t}>{t}</Chip>
         ))}
       </div>
       <div className="mt-auto flex flex-wrap gap-2 pt-1">
-        {caseStudyUrl ? (
-          <a href={caseStudyUrl} className={cn(buttonBase, "bg-primary text-primary-foreground hover:bg-primary/85")}>
-            {copy.caseStudy} <ArrowRight className="size-4" />
-          </a>
-        ) : (
-          <Link
-            href={askAssistantHref(`${copy.caseStudyPrompt} ${project.name}`)}
-            className={cn(buttonBase, "bg-primary text-primary-foreground hover:bg-primary/85")}
-          >
-            {copy.caseStudy} <ArrowRight className="size-4" />
-          </Link>
-        )}
-        {githubUrl && (
-          <a href={githubUrl} target="_blank" rel="noreferrer" className={cn(buttonBase, "border hover:bg-muted")}>
+        <Link href={project.href} className={cn(buttonBase, "bg-primary text-primary-foreground hover:bg-primary/85")}>
+          {copy.caseStudy} <ArrowRight className="size-4" />
+        </Link>
+        <Link href={askAssistantHref(`${copy.caseStudyPrompt} ${project.title}`)} className={cn(buttonBase, "border hover:bg-muted")}>
+          <Sparkles className="size-4" /> {copy.askAi}
+        </Link>
+        {project.links?.github && (
+          <a href={project.links.github} target="_blank" rel="noreferrer" className={cn(buttonBase, "border hover:bg-muted")}>
             <GithubIcon className="size-4" /> {copy.github}
           </a>
         )}
@@ -88,7 +97,7 @@ function ProjectCard({ project }: { project: Project }) {
 
 const visualFrame = "grid h-40 place-items-center overflow-hidden rounded-xl border bg-linear-to-br from-hero-from to-hero-to"
 
-function ProjectVisual({ project }: { project: Project }) {
+function ProjectVisual({ project }: { project: ProjectSummary }) {
   const visual = project.visual
 
   if (visual.kind === "diagram") {
@@ -142,17 +151,17 @@ function ProjectVisual({ project }: { project: Project }) {
 
   return (
     <div className={visualFrame} aria-hidden="true">
-      <visual.icon className="size-16 text-blue-400 drop-shadow-[0_0_20px_rgb(96_165_250/0.5)]" />
+      <ContentIcon name={visual.icon} className="size-16 text-blue-400 drop-shadow-[0_0_20px_rgb(96_165_250/0.5)]" />
     </div>
   )
 }
 
-/** The first `count` projects, for the home page (project data can't cross the server boundary). */
-export function FeaturedProjects({ count }: { count: number }) {
+/** Project cards for the home page (data comes from the server page as plain props). */
+export function FeaturedProjects({ projects }: { projects: ProjectSummary[] }) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {projects.slice(0, count).map((project) => (
-        <ProjectCard key={project.name} project={project} />
+      {projects.map((project) => (
+        <ProjectCard key={project.id} project={project} />
       ))}
     </div>
   )

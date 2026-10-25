@@ -1,17 +1,18 @@
-import type { Metadata } from "next";
 import { Briefcase } from "lucide-react";
 
 import { ExperienceTimeline } from "@/components/experience-timeline";
 import { PageShell } from "@/components/page-shell";
 import { card, PageIntro } from "@/components/page-ui";
 import { PORTFOLIO } from "@/lib/portfolio";
+import { pageMetadata } from "@/lib/seo";
 
 const { experiencePage: copy } = PORTFOLIO;
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: copy.seoTitle,
   description: copy.seoDescription,
-};
+  path: "/experience",
+});
 
 export default function ExperiencePage() {
   return (

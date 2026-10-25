@@ -179,6 +179,26 @@
   .prose-chat td {
     @apply border px-2 py-1;
   }
+
+  /* Long-form articles and case studies (used together with .prose-chat) */
+  .prose-article {
+    @apply text-[0.95rem] leading-7 text-foreground/90;
+  }
+  .prose-article h2 {
+    @apply mt-10 scroll-mt-20 border-b pb-2 text-xl tracking-tight text-foreground first:mt-0;
+  }
+  .prose-article h3 {
+    @apply mt-6 text-base text-foreground;
+  }
+  .prose-article pre {
+    @apply border text-[0.82rem] leading-6;
+  }
+  .prose-article table {
+    @apply text-sm;
+  }
+  .prose-article th {
+    @apply bg-muted/60;
+  }
 }
 
 /* Hide scrollbars but keep scrolling (wheel, touch, keyboard) */

@@ -1,12 +1,9 @@
-// Single source of truth for all portfolio content: personal details, the facts the AI
-// assistant answers from, and every piece of copy shown on the site. Components only
-// render what's here, so to change any text on the site, edit this file.
+// Personal details and all site copy. Components only render what's here. Projects and
+// articles live in content/ (see content/types.ts); both are indexed for the AI assistant.
 //
-// TODO: fill in WHATSAPP_NUMBER, the LinkedIn/GitHub URLs, and add public/resume.pdf
-// and public/avatar.png.
+// TODO: add public/avatar.png (the site falls back to initials until then).
 
 import {
-  Atom,
   BookOpen,
   Blocks,
   Building,
@@ -22,21 +19,15 @@ import {
   Handshake,
   House,
   Info,
-  Layers,
-  LayoutDashboard,
   Lightbulb,
   Mail,
   Newspaper,
-  ScanFace,
   ShieldCheck,
-  ShoppingBag,
   Smartphone,
   Sparkles,
   Target,
-  Ticket,
   Timer,
   TrendingUp,
-  Truck,
   User,
   Users,
   Zap,
@@ -84,6 +75,9 @@ export const PORTFOLIO = {
       "6+ years of experience building production React.js and Next.js applications. Experienced in frontend architecture, BFF/API integration and SSR, SSG, ISR and CSR, focused on performance, SEO and shipping features to production.",
     summary:
       "Senior Frontend Engineer with 6+ years of experience building production React.js and Next.js applications. Experienced in frontend architecture, BFF/API integration, and SSR, SSG, ISR, and CSR. Focused on performance, SEO, and shipping features to production.",
+    // Kept separate from the resume summary: this is current learning, not professional experience.
+    aiFocus:
+      "I'm expanding into AI application engineering by building real features: this site's assistant uses retrieval-augmented generation (RAG) over my published content, with source citations and controlled web search.",
     quote: "I believe in writing clean code, building scalable products and always learning new things.",
   },
 
@@ -112,6 +106,8 @@ export const PORTFOLIO = {
         "Nutrition Dashboard: built a JSON-driven UI used by 20+ dietitians to manage plans for 60,000+ users.",
         "Aghora integration: real-time data and user flows across dietitian chat, scheduled calls, audio calls and chat history migration.",
         "Liveness verification: built a flow using TensorFlow Face Landmarks Detection to verify users before booking, and implemented QR scanning for gym workout attendance.",
+        // Confirmed by Ayush (Oct 2026); not yet on public/resume.pdf.
+        "Mentoring: mentor two junior developers.",
       ],
       technologies: [
         "JavaScript",
@@ -186,127 +182,16 @@ export const PORTFOLIO = {
     { degree: "Bachelor of Computer Applications (BCA)", place: "Graphic Era Hill University, Bhimtal, India", period: "" },
   ],
 
-  // visual: how the card's image area is drawn (no screenshots yet).
-  // githubUrl / caseStudyUrl are optional; without caseStudyUrl, "View Case Study" asks the AI.
-  projects: [
-    {
-      name: "Partners Studio",
-      description:
-        "A React PWA used by 20+ corporate clients, with offline support and service workers. Built at FITPASS.",
-      tags: ["React.js", "PWA", "Service Workers"],
-      categories: ["Web App", "PWA"],
-      featured: true,
-      visual: { kind: "icon", icon: Smartphone },
-    },
-    {
-      name: "fitpass.co.in",
-      description:
-        "The FITPASS website on Next.js, using SSR, SSG, ISR or CSR per page based on SEO and performance needs, with webhook-triggered ISR and Lighthouse scores in the 90s.",
-      tags: ["Next.js", "SEO", "ISR"],
-      categories: ["Web App", "Performance"],
-      visual: { kind: "score", score: 90, display: "90+", label: "Lighthouse" },
-    },
-    {
-      name: "BFF Layer",
-      description:
-        "A Backend-for-Frontend built with Next.js Route Handlers that connects backend and external services, handles common business logic and routes gRPC calls.",
-      tags: ["Next.js", "Route Handlers", "gRPC"],
-      categories: ["Architecture"],
-      visual: { kind: "diagram", clients: ["Web", "PWA"], hub: "BFF (Route Handlers)", backend: "Services & gRPC" },
-    },
-    {
-      name: "FITSHOP",
-      description:
-        "The FITPASS membership platform, rebuilt on the Next.js App Router using Server Components and Server Actions.",
-      tags: ["Next.js App Router", "Server Components", "Server Actions"],
-      categories: ["Web App", "Architecture"],
-      visual: { kind: "icon", icon: ShoppingBag },
-    },
-    {
-      name: "Nutrition Dashboard",
-      description:
-        "A JSON-driven UI used by 20+ dietitians to manage plans for 60,000+ users, with Aghora integration for real-time dietitian chat, scheduled calls, audio calls and chat history migration.",
-      tags: ["React.js", "JSON-driven UI", "Real-time"],
-      categories: ["Web App"],
-      visual: { kind: "icon", icon: LayoutDashboard },
-    },
-    {
-      name: "Liveness Verification",
-      description:
-        "A flow using TensorFlow Face Landmarks Detection to verify users before booking, plus QR scanning for gym workout attendance.",
-      tags: ["TensorFlow", "Face Landmarks", "QR Scanning"],
-      categories: ["AI"],
-      visual: { kind: "icon", icon: ScanFace },
-    },
-    {
-      name: "QTickets",
-      description:
-        "A multi-region ticket booking platform for movies, events and sports, with seat selection, checkout, REST API integration and the Doha Bank payment gateway. Built at Elite Mindz.",
-      tags: ["React.js", "REST APIs", "Payments"],
-      categories: ["Web App"],
-      visual: { kind: "icon", icon: Ticket },
-    },
-    {
-      name: "LOGITRACK",
-      description:
-        "An IoT dashboard for live shipment tracking, built with React.js, TypeScript and REST APIs at Enbake Consulting.",
-      tags: ["React.js", "TypeScript", "IoT"],
-      categories: ["Web App"],
-      visual: { kind: "icon", icon: Truck },
-    },
-    {
-      name: "AI Portfolio Assistant",
-      description:
-        "This site: a portfolio you can chat with. Built with Next.js, Tailwind CSS, shadcn/ui, the Vercel AI SDK and Google's Gemma/Gemini models, with answers grounded in portfolio data and optional Google Search.",
-      tags: ["Next.js", "AI SDK", "Tailwind CSS"],
-      categories: ["Web App", "AI"],
-      visual: { kind: "icon", icon: Sparkles },
-      githubUrl: "https://github.com/iayushpathak-dev/common-portfolio",
-    },
-  ],
-
-  // Articles aren't written yet: without a url, a post offers "Ask AI about this" instead.
-  // TODO: add real articles and their url.
-  posts: [
-    {
-      title: "React Performance Optimization: Practical Guide for Production Apps",
-      date: "Oct 3, 2026",
-      readMinutes: 8,
-      excerpt:
-        "Learn practical techniques to optimize React applications including memoization, code splitting, virtualization and real-world performance tips.",
-      tags: ["React", "Performance", "Web Vitals"],
-      categories: ["React", "Performance"],
-      featured: true,
-      icon: Atom,
-    },
-    {
-      title: "Next.js Rendering Methods: SSR, SSG, ISR Explained",
-      date: "Sep 28, 2026",
-      readMinutes: 6,
-      excerpt: "A complete guide to understand different rendering methods in Next.js, their use cases and best practices.",
-      tags: ["Next.js", "SSR", "SSG", "ISR"],
-      categories: ["Next.js"],
-      icon: Code,
-    },
-    {
-      title: "Frontend Architecture at Scale",
-      date: "Sep 10, 2026",
-      readMinutes: 7,
-      excerpt:
-        "Key learnings from building large frontend applications with micro frontends, BFF and modular architecture.",
-      tags: ["Architecture", "Micro Frontends", "BFF"],
-      categories: ["Architecture"],
-      icon: Layers,
-    },
-    {
-      title: "Using AI Tools in Frontend Development",
-      date: "Aug 29, 2026",
-      readMinutes: 5,
-      excerpt: "How I use Claude and other AI tools to improve productivity, write better code and learn faster.",
-      tags: ["AI", "Productivity", "Developer Tools"],
-      categories: ["AI", "Career"],
-      icon: Sparkles,
-    },
+  // AI engineering is current learning. Each topic says how far it has gone, so the site never
+  // presents a learning topic as professional experience.
+  aiJourney: [
+    { topic: "LLM integration and streaming chat UIs", status: "Hands-on Implementation" },
+    { topic: "Retrieval-Augmented Generation (RAG)", status: "Hands-on Implementation" },
+    { topic: "Embeddings and vector databases", status: "Hands-on Implementation" },
+    { topic: "AI evaluation and observability", status: "Hands-on Implementation" },
+    { topic: "Claude Code and AI-assisted engineering", status: "Hands-on Implementation" },
+    { topic: "Tool calling and structured outputs", status: "Learning Notes" },
+    { topic: "Generative UI and AI agents", status: "Learning Notes" },
   ],
 
   /* ───────────── Site copy ───────────── */
@@ -398,6 +283,29 @@ export const PORTFOLIO = {
     genericError: "Something went wrong while answering. Please try again.",
     notConfigured: "The assistant isn't configured yet: set GOOGLE_GENERATIVE_AI_API_KEY in .env.local.",
     retry: "Retry",
+    // Fixed replies: sent without calling the model.
+    replies: {
+      greeting:
+        "Hi! I can answer questions about my experience, projects and articles, or about frontend and AI engineering. For example: *What did you build at FITPASS?* or *How does RAG work?*",
+      outOfScope:
+        "I'm the assistant on my portfolio, so I only answer questions about my work, projects and articles, or about frontend and AI engineering. Try asking about my experience at FITPASS, a project, or a topic like RAG or Next.js rendering.",
+      blocked:
+        "I can't change how I work or share my configuration. I'm happy to answer questions about my experience, projects and articles, or about frontend and AI engineering.",
+      noContext:
+        "I don't have published information about that, so I'd rather not guess. You can ask about my experience, projects or articles, or contact me directly on LinkedIn or by email.",
+      knowledgeUnavailable:
+        "My knowledge base is temporarily unavailable, so I can't answer questions about my work right now. Please try again in a minute.",
+      rateLimited: "You're sending messages quickly. Please wait a minute and try again.",
+      quota: "The AI provider's usage limit was reached. Please wait a minute and try again.",
+      timeout: "The answer took too long. Please try again.",
+      emptyAnswer: "I couldn't put an answer together that time. Please try again.",
+    },
+    routeLabels: {
+      portfolio: "From my portfolio",
+      web: "Web search",
+      general: "General knowledge",
+      none: "No matching information",
+    },
   },
 
   insights: {
@@ -431,8 +339,9 @@ export const PORTFOLIO = {
   homePage: {
     availability: "Available for new opportunities",
     greeting: "Hi, I'm",
+    headline: "I build fast, maintainable React.js and Next.js products.",
     intro:
-      "I build production React.js and Next.js applications, with a focus on frontend architecture, performance and SEO. I enjoy solving complex problems and shipping products that deliver real user impact.",
+      "6+ years building production web applications: frontend architecture, BFF and API integration, rendering strategy (SSR, SSG, ISR, CSR), PWAs, performance and SEO. At FITPASS I work across the website, membership platform, corporate PWA and dietitian tools, and mentor two junior developers.",
     handwrittenNote: "Frontend Engineer",
     viewWork: "View My Work",
     downloadResume: "Download Resume (PDF)",
@@ -449,19 +358,27 @@ export const PORTFOLIO = {
       "}",
     ],
     whatIDo: [
-      { title: "Build Products", text: "Turn ideas into scalable web applications.", icon: Blocks },
-      { title: "Solve Problems", text: "Design clean and efficient solutions.", icon: Lightbulb },
-      { title: "Optimize Performance", text: "Focus on speed, SEO and Core Web Vitals.", icon: Zap },
-      { title: "Collaborate", text: "Work with cross-functional teams to ship to production.", icon: Users },
+      { title: "Frontend Architecture", text: "BFF layers, configuration-driven UIs and maintainable component systems.", icon: Blocks },
+      { title: "Rendering & SEO", text: "Choosing SSR, SSG, ISR or CSR per page for speed and search.", icon: Lightbulb },
+      { title: "Performance", text: "Core Web Vitals, Lighthouse and offline-capable PWAs.", icon: Zap },
+      { title: "Mentoring", text: "Mentoring two junior developers and shipping with cross-functional teams.", icon: Users },
     ],
-    featuredTitle: "Featured Projects",
-    featuredSubtitle: "Some of the products I've worked on",
+    featuredTitle: "Selected Engineering Work",
+    featuredSubtitle: "Case studies with the problem, architecture and trade-offs",
     viewAllProjects: "View All Projects",
     featuredCount: 3,
-    blogTitle: "Latest Blog Posts",
-    blogSubtitle: "Thoughts, tutorials and learning notes",
-    viewAllPosts: "View All Posts",
+    blogTitle: "Featured Articles",
+    blogSubtitle: "Engineering notes and what I'm learning",
+    viewAllPosts: "View All Articles",
     postsCount: 3,
+    aiTitle: "My AI Engineering Journey",
+    aiSubtitle: "What I've built so far, and what I'm still learning",
+    aiCta: "Try the AI Assistant",
+    contactTitle: "Let's work together",
+    contactText:
+      "I'm open to senior frontend and AI-focused frontend roles. The quickest way to reach me is LinkedIn or email.",
+    contactEmail: "Email me",
+    exploreTitle: "Explore",
     careerTitle: "Career Journey",
     viewAll: "View All",
   },
@@ -506,14 +423,16 @@ export const PORTFOLIO = {
     seoDescription: "About Ayush Pathak, Senior Frontend Engineer: my story, what I do and what I value.",
     eyebrow: "About Me",
     intro:
-      "I'm a frontend developer who enjoys building scalable, high-performance web applications using React.js, Next.js and modern technologies. I love solving real world problems, learning new tech and creating products that make an impact.",
+      "I'm a Senior Frontend Engineer with 6+ years of experience building production React.js and Next.js applications. I care about clear architecture, fast pages and code that the next developer can change with confidence.",
     experienceChip: "6+ Years Experience",
     availability: "Open to Opportunities",
     storyTitle: "My Story",
     story: [
       "I started in 2020 at Magic Software, building interactive EdTech modules with React.js and HTML5. Since then I've built LOGITRACK, an IoT shipment-tracking dashboard, and QTickets, a multi-region ticket booking platform. At FITPASS I build fitpass.co.in, the BFF layer, FITSHOP, Partners Studio and the Nutrition Dashboard.",
-      "I enjoy working on complex problems, learning new technologies and collaborating with cross-functional teams to deliver high-quality products.",
+      "My work spans frontend architecture and product engineering: a Backend-for-Frontend layer with Next.js Route Handlers and gRPC, rendering strategies for SEO and performance, an offline-capable corporate PWA, configuration-driven interfaces and third-party integrations. I also mentor two junior developers.",
+      "Right now I'm expanding into AI application engineering by building, not just reading: this site's assistant answers from my published content using retrieval-augmented generation, cites its sources and only searches the web for current technical questions. My blog separates what I've implemented from what I'm still learning.",
     ],
+    aiTitle: "Learning Journey",
     whatIDoTitle: "What I Do",
     whatIDo: [
       { title: "Build Products", text: "Develop scalable and maintainable frontend applications.", icon: Blocks },
@@ -535,13 +454,22 @@ export const PORTFOLIO = {
 
   blogPage: {
     seoTitle: "Blog — Ayush Pathak",
-    seoDescription: "Thoughts, tutorials and learnings about frontend development, performance and architecture.",
+    seoDescription:
+      "Technical articles and learning notes by Ayush Pathak on AI engineering, RAG, React, Next.js, frontend architecture and performance.",
     title: "Blog",
-    subtitle: "Sharing what I learn",
-    description: "Thoughts, tutorials and learnings about frontend development, performance, architecture and more.",
+    subtitle: "Engineering notes and learning in public",
+    description:
+      "Each article is labelled: Professional Experience, Hands-on Implementation, Experiment or Learning Notes, so it's clear what I've built and what I'm studying.",
     searchPlaceholder: "Search articles...",
     allLabel: "All",
-    categories: ["React", "Next.js", "Performance", "Architecture", "AI", "Career"],
+    noArticlesYet: "Articles are being reviewed and will appear here soon.",
+    plannedTitle: "Planned topics",
+    plannedSubtitle: "Articles I'm planning to write next.",
+    relatedProjectsTitle: "Related projects",
+    relatedArticlesTitle: "Related articles",
+    referencesTitle: "References",
+    backToBlog: "All articles",
+    updatedLabel: "Updated",
     featuredLabel: "Featured",
     minRead: "min read",
     readArticle: "Read Article",
@@ -556,14 +484,33 @@ export const PORTFOLIO = {
     title: "Projects",
     subtitle: "Product work that I'm proud of.",
     description:
-      "A few selected projects that showcase my experience in building real world applications, solving complex problems and creating great user experiences.",
+      "Case studies of work I've done professionally and on my own. Each one separates confirmed facts from general trade-offs.",
     allLabel: "All",
-    filters: ["Web App", "PWA", "Architecture", "Performance", "AI"],
+    filters: ["Web App", "PWA", "Architecture", "Performance", "Integrations", "AI"],
     featuredLabel: "Featured",
     caseStudy: "View Case Study",
+    askAi: "Ask AI",
     github: "GitHub",
+    live: "Live site",
     caseStudyPrompt: "Tell me about the project:",
     empty: "No projects in this category yet.",
+    backToProjects: "All projects",
+    stackTitle: "Technology stack",
+    sections: {
+      problem: "Business or user problem",
+      challenge: "Technical challenge",
+      contribution: "My contribution",
+      architecture: "Architecture and data flow",
+      decisions: "Implementation decisions",
+      tradeoffs: "Trade-offs and alternatives",
+      limitations: "Challenges and limitations",
+      impact: "Impact",
+      lessons: "Lessons learned",
+    },
+    tradeoffsNote:
+      "General engineering trade-offs for this kind of system. They are not a record of decisions made on this project unless stated above.",
+    relatedArticlesTitle: "Related articles",
+    todoTitle: "TODO before publishing (visible in development only)",
   },
 
   experiencePage: {
@@ -579,19 +526,3 @@ export const PORTFOLIO = {
   },
 } as const
 
-/** The factual part of the portfolio, serialised into the AI's instructions. */
-export function portfolioContext() {
-  const { profile, highlights, experience, skillGroups, education, projects } = PORTFOLIO
-  return JSON.stringify(
-    {
-      profile,
-      highlights: highlights.map(({ value, label }) => `${value} ${label}`),
-      experience,
-      skills: skillGroups,
-      education,
-      projects: projects.map(({ name, description, tags }) => ({ name, description, tags })),
-    },
-    null,
-    2,
-  )
-}
