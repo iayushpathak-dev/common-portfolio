@@ -167,13 +167,13 @@
     @apply rounded bg-muted px-1 py-0.5 font-mono text-[0.85em];
   }
   .prose-chat pre {
-    @apply overflow-x-auto rounded-lg bg-muted p-3;
+    @apply overflow-x-auto scrollbar-hide rounded-lg bg-muted p-3;
   }
   .prose-chat pre code {
     @apply bg-transparent p-0;
   }
   .prose-chat table {
-    @apply block w-full overflow-x-auto text-left;
+    @apply block w-full overflow-x-auto scrollbar-hide text-left;
   }
   .prose-chat th,
   .prose-chat td {

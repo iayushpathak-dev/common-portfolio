@@ -140,7 +140,7 @@ Constants at the top of the file: `WHATSAPP_NUMBER` (digits with country code), 
 
 **The AI answers from published content.** `lib/rag/documents.ts` turns the profile, experience, skills, education and every *published* project and article into knowledge documents. Anything published is treated as fact, so keep it true and in sync with `public/resume.pdf`.
 
-To add an image: put it in `public/` (e.g. `public/avatar.png`) and reference it as `/avatar.png`. Without the avatar file, the site shows "AP" initials.
+To add an image: put it in `public/` (e.g. `public/avatar.webp`) and reference it as `/avatar.webp`. Without the avatar file, the site shows "AP" initials.
 
 ---
 
@@ -349,7 +349,7 @@ Commits use the personal email `ayushpathakhaldwani@gmail.com` (set in this repo
 ## Pending work / TODO
 
 **Content**
-- [ ] Add `public/avatar.png` (profile photo).
+- [x] Add `public/avatar.webp` (profile photo).
 - [ ] Confirm `profile.location` ("Delhi NCR, India" isn't on the resume).
 - [ ] Confirm `WHATSAPP_NUMBER` (currently the resume's phone number).
 - [ ] Review the 15 draft articles in `content/articles/` and publish the ones you're happy with.

@@ -1,10 +1,7 @@
 // Personal details and all site copy. Components only render what's here. Projects and
 // articles live in content/ (see content/types.ts); both are indexed for the AI assistant.
-//
-// TODO: add public/avatar.png (the site falls back to initials until then).
 
 import {
-  BookOpen,
   Blocks,
   Building,
   Briefcase,
@@ -14,20 +11,15 @@ import {
   Ellipsis,
   FileText,
   FolderOpen,
-  Gauge,
   Globe,
-  Handshake,
   House,
   Info,
   Lightbulb,
   Mail,
   Newspaper,
-  ShieldCheck,
   Smartphone,
   Sparkles,
-  Target,
   Timer,
-  TrendingUp,
   User,
   Users,
   Zap,
@@ -65,7 +57,7 @@ export const PORTFOLIO = {
     role: "Senior Frontend Engineer",
     tagline:
       "I build production React.js and Next.js applications, with a focus on frontend architecture, performance and SEO.",
-    avatar: "/avatar.png",
+    avatar: "/avatar.webp",
     resumeUrl: RESUME_URL,
     // Not on the resume; shown on the site only.
     location: "Delhi NCR, India",
@@ -85,7 +77,7 @@ export const PORTFOLIO = {
     { value: "6+", label: "Years Experience", icon: Briefcase },
     { value: "20+", label: "Corporate Clients on Partners Studio", icon: Building },
     { value: "60,000+", label: "Users on the Nutrition Dashboard", icon: Users },
-    { value: "90+", label: "Lighthouse Scores on fitpass.co.in", icon: Gauge },
+    { value: "4", label: "Rendering Modes on fitpass.co.in (SSR, SSG, ISR, CSR)", icon: Blocks },
   ],
 
   // Most recent first. location is optional (the resume doesn't list one per job).
@@ -94,15 +86,15 @@ export const PORTFOLIO = {
       company: "FITPASS",
       role: "Senior Frontend Engineer",
       period: "Nov 2022 – Present",
-      duration: "3+ years",
+      duration: "4+ years",
       location: "",
       summary:
-        "Building the FITPASS web platform, membership platform, corporate PWA and dietitian tools with React.js and Next.js.",
+        "Building the FITPASS web platform, membership platform, corporate partner web app and dietitian tools with React.js and Next.js.",
       highlights: [
-        "fitpass.co.in: built on Next.js, using SSR, SSG, ISR or CSR based on SEO and performance needs, with webhook-triggered ISR and Lighthouse scores in the 90s.",
+        "fitpass.co.in: built on Next.js, using SSR, SSG, ISR or CSR based on SEO and performance needs, with webhook-triggered ISR so content updates go live without a full rebuild.",
         "BFF layer: built with Next.js Route Handlers to connect backend and external services, handle common business logic and route gRPC calls.",
         "FITSHOP: rebuilt the membership platform on the App Router using Server Components and Server Actions.",
-        "Partners Studio: shipped a React PWA used by 20+ corporate clients, with offline support and service workers.",
+        "Partner Studio: built the web app that 20+ corporate partners open inside their own apps, and moved it to a server-first Next.js 16 architecture.",
         "Nutrition Dashboard: built a JSON-driven UI used by 20+ dietitians to manage plans for 60,000+ users.",
         "Aghora integration: real-time data and user flows across dietitian chat, scheduled calls, audio calls and chat history migration.",
         "Liveness verification: built a flow using TensorFlow Face Landmarks Detection to verify users before booking, and implemented QR scanning for gym workout attendance.",
@@ -244,7 +236,7 @@ export const PORTFOLIO = {
       prompt: "Compare React vs Vue for a large production app",
       icon: Code,
     },
-    { label: "How do you build PWAs?", shortLabel: "Build PWAs", prompt: "How do you build PWAs?", icon: Smartphone },
+    { label: "How do you build apps that run inside WebViews?", shortLabel: "WebView apps", prompt: "How do you build web apps that run inside native app WebViews?", icon: Smartphone },
   ],
 
   sidebar: {
@@ -339,9 +331,17 @@ export const PORTFOLIO = {
   homePage: {
     availability: "Available for new opportunities",
     greeting: "Hi, I'm",
-    headline: "I build fast, maintainable React.js and Next.js products.",
+    headline: "I build web applications with React and Next.js, with a focus on frontend architecture, performance and maintainable code.",
     intro:
-      "6+ years building production web applications: frontend architecture, BFF and API integration, rendering strategy (SSR, SSG, ISR, CSR), PWAs, performance and SEO. At FITPASS I work across the website, membership platform, corporate PWA and dietitian tools, and mentor two junior developers.",
+      "I've been doing frontend work for 6+ years, mostly on fitness and corporate products. At FITPASS I work on web applications, corporate user journeys, a partner web app that runs inside other apps, API integrations through a Next.js BFF layer, and reusable UI components. I've also built config-driven flows so different corporate clients get the features they need, and I mentor two junior developers.",
+    // Hero stats. Kept separate from `highlights` (used on the resume page) and limited to
+    // facts that don't depend on business numbers.
+    stats: [
+      { value: "6+", label: "Years in frontend", icon: Briefcase },
+      { value: "3+", label: "Years at FITPASS", icon: Building },
+      { value: "2", label: "Junior developers mentored", icon: Users },
+      { value: "React · Next.js", label: "Core stack", icon: Code },
+    ],
     handwrittenNote: "Frontend Engineer",
     viewWork: "View My Work",
     downloadResume: "Download Resume (PDF)",
@@ -352,15 +352,15 @@ export const PORTFOLIO = {
     codeLines: [
       "const developer = {",
       '  name: "Ayush",',
-      '  skills: ["React", "Next.js", "TypeScript"],',
-      '  focus: "Scalable Products",',
-      "  alwaysLearning: true,",
+      '  role: "Frontend Engineer",',
+      '  stack: ["React", "Next.js", "TypeScript"],',
+      '  experience: "6+ years",',
       "}",
     ],
     whatIDo: [
       { title: "Frontend Architecture", text: "BFF layers, configuration-driven UIs and maintainable component systems.", icon: Blocks },
       { title: "Rendering & SEO", text: "Choosing SSR, SSG, ISR or CSR per page for speed and search.", icon: Lightbulb },
-      { title: "Performance", text: "Core Web Vitals, Lighthouse and offline-capable PWAs.", icon: Zap },
+      { title: "Performance", text: "Core Web Vitals, Lighthouse and fast pages inside app WebViews.", icon: Zap },
       { title: "Mentoring", text: "Mentoring two junior developers and shipping with cross-functional teams.", icon: Users },
     ],
     featuredTitle: "Selected Engineering Work",
@@ -420,33 +420,35 @@ export const PORTFOLIO = {
 
   aboutPage: {
     seoTitle: "About — Ayush Pathak",
-    seoDescription: "About Ayush Pathak, Senior Frontend Engineer: my story, what I do and what I value.",
+    seoDescription:
+      "About Ayush Pathak, Senior Frontend Engineer at FITPASS: the products I've worked on, the frontend architecture I've designed and what I'm learning now.",
     eyebrow: "About Me",
     intro:
-      "I'm a Senior Frontend Engineer with 6+ years of experience building production React.js and Next.js applications. I care about clear architecture, fast pages and code that the next developer can change with confidence.",
+      "Senior Frontend Engineer at FITPASS with 6+ years of frontend experience, mostly in React and Next.js. Most of my work is on product features with many moving parts: corporate journeys that differ from client to client, a BFF layer between the frontend and backend services, and public pages where SEO matters.",
     experienceChip: "6+ Years Experience",
     availability: "Open to Opportunities",
-    storyTitle: "My Story",
+    storyTitle: "My Journey",
     story: [
-      "I started in 2020 at Magic Software, building interactive EdTech modules with React.js and HTML5. Since then I've built LOGITRACK, an IoT shipment-tracking dashboard, and QTickets, a multi-region ticket booking platform. At FITPASS I build fitpass.co.in, the BFF layer, FITSHOP, Partners Studio and the Nutrition Dashboard.",
-      "My work spans frontend architecture and product engineering: a Backend-for-Frontend layer with Next.js Route Handlers and gRPC, rendering strategies for SEO and performance, an offline-capable corporate PWA, configuration-driven interfaces and third-party integrations. I also mentor two junior developers.",
-      "Right now I'm expanding into AI application engineering by building, not just reading: this site's assistant answers from my published content using retrieval-augmented generation, cites its sources and only searches the web for current technical questions. My blog separates what I've implemented from what I'm still learning.",
+      "I started in 2020 at Magic Software, converting legacy Flash learning modules into HTML, CSS, JavaScript and React. After that I built LOGITRACK, an IoT dashboard for live shipment tracking, at Enbake Consulting, and QTickets, a ticket booking platform for movies, events and sports, at Elite Mindz.",
+      "I joined FITPASS in November 2022, 4 years ago. Since then I've worked on fitpass.co.in, FITSHOP (the membership platform), Partner Studio (the web app corporate partners open inside their apps), the Nutrition Dashboard used by dietitians, campaign-based landing pages, the feedback journey and Segment event tracking.",
+      "The architecture work is the part I owned. I designed the config-driven setup for corporate journeys, so each client can have different features enabled through configuration instead of separate code. I also designed and built a BFF layer with Next.js Route Handlers that shapes backend responses into what the pages need. Alongside this, I mentor two junior developers.",
     ],
-    aiTitle: "Learning Journey",
-    whatIDoTitle: "What I Do",
+    aiTitle: "Currently Exploring",
+    ai: [
+      "I'm learning AI application engineering by building the assistant on this site. It's a personal project, not production AI work.",
+      "What works today: my portfolio content is split into chunks, embedded with Gemini and stored in Upstash Vector. Each question is classified first, then answered from the closest matching chunks, with links to the sources. Questions about current tech can use Google Search instead, and the answer says so when search isn't available.",
+      "Still in progress: tuning retrieval against an evaluation set of test questions. Tool calling and agents are topics I'm reading about, not building yet.",
+    ],
+    whatIDoTitle: "What I Work On",
     whatIDo: [
-      { title: "Build Products", text: "Develop scalable and maintainable frontend applications.", icon: Blocks },
-      { title: "Solve Problems", text: "Turn complex requirements into simple and efficient solutions.", icon: Lightbulb },
-      { title: "Collaborate", text: "Work with cross-functional teams to deliver great user experiences.", icon: Users },
-      { title: "Learn & Improve", text: "Keep exploring new technologies and improve as a developer.", icon: TrendingUp },
+      { title: "Frontend Architecture", text: "Config-driven journeys for different corporate clients, and a Next.js BFF layer.", icon: Blocks },
+      { title: "React & Next.js Products", text: "Customer-facing sites, dashboards and apps that run inside WebViews.", icon: Code },
+      { title: "Corporate User Journeys", text: "Integration and feedback flows that change from one client to another.", icon: Building },
+      { title: "Performance & Maintainability", text: "Picking SSR, SSG, ISR or CSR per page, and reusable components.", icon: Zap },
     ],
-    valuesTitle: "My Values",
-    values: [
-      { title: "Clean & Maintainable Code", text: "Write code that is easy to understand and scale.", icon: ShieldCheck },
-      { title: "User Focused", text: "Always think from the end user's perspective.", icon: Target },
-      { title: "Continuous Learning", text: "Keep learning and adapting to new technologies.", icon: BookOpen },
-      { title: "Team Collaboration", text: "Believe in sharing knowledge and growing together.", icon: Handshake },
-    ],
+    approachTitle: "Engineering Approach",
+    approach:
+      "I try to write code the next developer can change without fear. In practice that means clear boundaries (the BFF keeps backend details out of components), configuration instead of copy-paste when clients need different things, and shared components instead of near-duplicates. Product requirements change often, so I prefer designs that can take a new client or flow without a rewrite. Day to day I work closely with backend developers and the product team.",
     quickFactsTitle: "Quick Facts",
     availableForLabel: "Available For",
     availableFor: "Full-time Opportunities",
@@ -480,13 +482,13 @@ export const PORTFOLIO = {
 
   projectsPage: {
     seoTitle: "Projects — Ayush Pathak",
-    seoDescription: "Selected frontend projects by Ayush Pathak: PWAs, architecture, dashboards and performance work.",
+    seoDescription: "Selected frontend projects by Ayush Pathak: web apps, architecture, dashboards and performance work.",
     title: "Projects",
     subtitle: "Product work that I'm proud of.",
     description:
       "Case studies of work I've done professionally and on my own. Each one separates confirmed facts from general trade-offs.",
     allLabel: "All",
-    filters: ["Web App", "PWA", "Architecture", "Performance", "Integrations", "AI"],
+    filters: ["Web App", "Architecture", "Performance", "Integrations", "AI"],
     featuredLabel: "Featured",
     caseStudy: "View Case Study",
     askAi: "Ask AI",

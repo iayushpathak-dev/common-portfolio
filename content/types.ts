@@ -51,7 +51,7 @@ export type IconKey =
   | "bug"
   | "boxes"
 
-export type ProjectCategory = "Web App" | "PWA" | "Architecture" | "Performance" | "Integrations" | "AI"
+export type ProjectCategory = "Web App" | "Architecture" | "Performance" | "Integrations" | "AI"
 
 export type ProjectVisual =
   | { kind: "icon"; icon: IconKey }
