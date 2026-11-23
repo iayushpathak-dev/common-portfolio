@@ -1,19 +1,18 @@
 import { ARTICLES } from "@/content/articles"
+import { abdmAbhaIntegration } from "@/content/projects/abdm-abha-integration"
 import { aiPortfolioAssistant } from "@/content/projects/ai-portfolio-assistant"
 import { backendForFrontend } from "@/content/projects/backend-for-frontend"
 import { claudeCodeWorkflow } from "@/content/projects/claude-code-workflow"
 import { configurableCorporateJourneys } from "@/content/projects/configurable-corporate-journeys"
-import { corporateDashboardIntegrations } from "@/content/projects/corporate-dashboard-integrations"
 import { feedbackSolution } from "@/content/projects/feedback-solution"
+import { fitfeastWebview } from "@/content/projects/fitfeast-webview"
 import { fitpassCorporatePwa } from "@/content/projects/fitpass-corporate-pwa"
 import { fitpassWebsiteRendering } from "@/content/projects/fitpass-website-rendering"
 import { fitshop } from "@/content/projects/fitshop"
 import { livenessVerification } from "@/content/projects/liveness-verification"
-import { logitrack } from "@/content/projects/logitrack"
 import { marketingLandingPages } from "@/content/projects/marketing-landing-pages"
 import { nativeAppWebviewIntegration } from "@/content/projects/native-app-webview-integration"
 import { nutritionDashboard } from "@/content/projects/nutrition-dashboard"
-import { qtickets } from "@/content/projects/qtickets"
 import type { Article, Project, PublicationStatus } from "@/content/types"
 
 export type { Article, Project } from "@/content/types"
@@ -24,17 +23,16 @@ export const PROJECTS: Project[] = [
   backendForFrontend,
   fitpassWebsiteRendering,
   nutritionDashboard,
+  fitfeastWebview,
   aiPortfolioAssistant,
   fitshop,
   livenessVerification,
+  abdmAbhaIntegration,
   configurableCorporateJourneys,
-  corporateDashboardIntegrations,
   marketingLandingPages,
   feedbackSolution,
   nativeAppWebviewIntegration,
   claudeCodeWorkflow,
-  qtickets,
-  logitrack,
 ]
 
 export { ARTICLES }

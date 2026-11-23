@@ -9,7 +9,7 @@ import { toArticleSummary, toProjectSummary, visibleArticles, visibleProjects } 
 import { PORTFOLIO } from "@/lib/portfolio"
 import { cn } from "@/lib/utils"
 
-const { profile, highlights, experience, education, aiJourney, pages, homePage: copy } = PORTFOLIO
+const { profile, experience, education, aiJourney, pages, homePage: copy } = PORTFOLIO
 
 export function HomeView() {
   const projects = visibleProjects()
@@ -97,7 +97,7 @@ function Hero() {
           </div>
 
           <dl className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {highlights.map(({ value, label, icon: Icon }) => (
+            {copy.stats.map(({ value, label, icon: Icon }) => (
               <div key={label} className="flex items-start gap-2.5">
                 <Icon className="mt-1 size-6 shrink-0 text-violet-500 dark:text-violet-300" />
                 <div className="min-w-0">

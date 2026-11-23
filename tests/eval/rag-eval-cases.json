@@ -3,7 +3,7 @@
   "cases": [
     { "id": "direct-fitpass", "category": "1. Direct personal content", "question": "What did you build at FITPASS?", "expectedIntent": "personal", "expectedDocuments": ["experience-fitpass"] },
     { "id": "direct-bff", "category": "1. Direct personal content", "question": "How did you use gRPC in your BFF layer?", "expectedIntent": "personal", "expectedDocuments": ["project-backend-for-frontend"] },
-    { "id": "direct-pwa", "category": "1. Direct personal content", "question": "How many corporate clients use your Partners Studio PWA?", "expectedIntent": "personal", "expectedDocuments": ["project-fitpass-corporate-pwa"] },
+    { "id": "direct-pwa", "category": "1. Direct personal content", "question": "How many corporate partners use your Partners Studio app?", "expectedIntent": "personal", "expectedDocuments": ["project-fitpass-corporate-pwa"] },
     { "id": "direct-education", "category": "1. Direct personal content", "question": "Where did Ayush study?", "expectedIntent": "personal", "expectedDocuments": ["profile-education"] },
     { "id": "direct-mentoring", "category": "1. Direct personal content", "question": "Do you mentor other developers?", "expectedIntent": "personal", "expectedDocuments": ["experience-fitpass", "profile-about"] },
     { "id": "multi-rendering-fitshop", "category": "2. Multiple chunks", "question": "Compare how you chose rendering modes for fitpass.co.in with how you rebuilt FITSHOP", "expectedIntent": "personal", "expectedDocuments": ["project-fitpass-website-rendering", "project-fitshop"], "requireAll": true },

@@ -1,4 +1,4 @@
-import { BookOpen, Briefcase, Building, CircleCheck, Heart, MapPin, Quote, Rocket, Sparkles, UserRound } from "lucide-react";
+import { BookOpen, Briefcase, Building, CircleCheck, Compass, MapPin, Quote, Rocket, Sparkles, UserRound } from "lucide-react";
 
 import { PageShell } from "@/components/page-shell";
 import { card, SectionTitle } from "@/components/page-ui";
@@ -33,7 +33,10 @@ export default function AboutPage() {
             <TileSection title={copy.whatIDoTitle} icon={Rocket} items={copy.whatIDo} />
           </div>
           <LearningJourney />
-          <TileSection title={copy.valuesTitle} icon={Heart} items={copy.values} />
+          <section className={card}>
+            <SectionTitle icon={Compass}>{copy.approachTitle}</SectionTitle>
+            <p className="max-w-3xl text-sm leading-relaxed text-foreground/85">{copy.approach}</p>
+          </section>
         </div>
 
         <aside className="flex flex-col gap-4">
@@ -56,7 +59,7 @@ function AboutHero() {
         <div className="min-w-0">
           <p className="text-sm font-medium text-primary dark:text-blue-300">{copy.eyebrow}</p>
           <h1 className="mt-1 text-2xl font-bold tracking-tight lg:text-3xl 2xl:text-4xl">
-            {hero.greeting} {profile.firstName} <span aria-hidden="true">{hero.wave}</span>
+            {hero.greeting} {profile.firstName}
           </h1>
           <p className="mt-1 text-foreground/85 lg:text-lg">{profile.role}</p>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-foreground/80 2xl:text-base">{copy.intro}</p>
@@ -112,6 +115,11 @@ function LearningJourney() {
   return (
     <section className={card}>
       <SectionTitle icon={Sparkles}>{copy.aiTitle}</SectionTitle>
+      <div className="mb-4 max-w-3xl space-y-3 text-sm leading-relaxed text-foreground/85">
+        {copy.ai.map((p) => (
+          <p key={p}>{p}</p>
+        ))}
+      </div>
       <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
         {aiJourney.map(({ topic, status }) => (
           <li key={topic} className="flex flex-col gap-1.5 rounded-xl border bg-background/40 p-3">
