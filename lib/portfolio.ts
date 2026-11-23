@@ -338,7 +338,7 @@ export const PORTFOLIO = {
     // facts that don't depend on business numbers.
     stats: [
       { value: "6+", label: "Years in frontend", icon: Briefcase },
-      { value: "3+", label: "Years at FITPASS", icon: Building },
+      { value: "4+", label: "Years at FITPASS", icon: Building },
       { value: "2", label: "Junior developers mentored", icon: Users },
       { value: "React · Next.js", label: "Core stack", icon: Code },
     ],
