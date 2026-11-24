@@ -11,6 +11,10 @@ const cases: [string, Intent][] = [
   ["How did the Partners Studio PWA work offline?", "personal"],
   ["Is he available to hire?", "personal"],
   ["Explain the BFF architecture you built", "personal"],
+  // Hinglish personal questions
+  ["Aapne FITPASS mein kya banaya?", "personal"],
+  ["Tumhara experience kitna hai?", "personal"],
+  ["Apne baare mein batao", "personal"],
   // Current/external technical information
   ["What's new in the latest Next.js release?", "current"],
   ["What is the newest React version?", "current"],

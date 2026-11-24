@@ -268,6 +268,7 @@ export const PORTFOLIO = {
     send: "Send",
     stop: "Stop",
     shortcutHint: "Ctrl + Enter to send",
+    privacyNote: "Questions the assistant can't answer are saved without personal details, so I can add answers later.",
   },
 
   chat: {

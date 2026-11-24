@@ -1,6 +1,6 @@
 import type { PublicationStatus } from "@/content/types"
 
-export type KnowledgeContentType = "profile" | "experience" | "skills" | "education" | "learning" | "project" | "article"
+export type KnowledgeContentType = "profile" | "experience" | "skills" | "education" | "learning" | "project" | "article" | "faq"
 
 /** One source document in the knowledge base. Only published, public content becomes one. */
 export type KnowledgeDocument = {

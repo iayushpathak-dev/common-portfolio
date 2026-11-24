@@ -72,3 +72,34 @@ export class MemoryVectorStore implements VectorStore {
     return new Map([...this.records].map(([id, r]) => [id, r.metadata.hash]))
   }
 }
+
+/** In-memory QuestionStore for tests. */
+export function createMemoryQuestionStore() {
+  const pending = new Map<string, import("@/lib/rag/question-log").PendingQuestion>()
+  const learned = new Map<string, import("@/lib/rag/question-log").LearnedFaq>()
+  const store: import("@/lib/rag/question-log").QuestionStore = {
+    async record({ question, route, at }) {
+      const { questionId } = await import("@/lib/rag/question-log")
+      const id = questionId(question)
+      const prev = pending.get(id)
+      pending.set(id, { id, question: prev?.question ?? question, count: (prev?.count ?? 0) + 1, route, firstSeen: prev?.firstSeen ?? at, lastSeen: at })
+    },
+    async listPending(limit) {
+      return [...pending.values()].sort((a, b) => b.lastSeen - a.lastSeen).slice(0, limit)
+    },
+    async dismiss(id) {
+      pending.delete(id)
+    },
+    async saveLearned(entry, answeredQuestionId) {
+      learned.set(entry.id, entry)
+      if (answeredQuestionId) pending.delete(answeredQuestionId)
+    },
+    async listLearned() {
+      return [...learned.values()]
+    },
+    async deleteLearned(id) {
+      learned.delete(id)
+    },
+  }
+  return { store, pending, learned }
+}

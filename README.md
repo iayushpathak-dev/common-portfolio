@@ -271,6 +271,13 @@ The assistant answers from **published portfolio content** using retrieval-augme
 - The model can still paraphrase beyond its documents; grounding is instructed and evaluated, not guaranteed.
 - Chat history lives in the visitor's browser only.
 
+### Learning from real questions
+
+- `content/faq.ts`: hand-written questions and answers (with other phrasings) grounded in published content. Each entry is one knowledge document.
+- When a question gets no answer from the portfolio (routes `no_context`, `out_of_scope`, `general`), it is saved in Upstash Redis with emails, links and long numbers removed, and counted when asked again (`lib/rag/question-log.ts`, `lib/rag/question-store.ts`). Visitors see a short note under the chat box.
+- Review them at `/admin/questions` (enter `RAG_ADMIN_SECRET`). Write an answer, pick the page to cite, save: it becomes a "learned" FAQ entry and the vector index is re-synced right away. Dismiss questions you don't want to answer.
+- Learned answers live in Redis and are included in every reindex (`lib/rag/learned.ts`), so they survive deploys.
+
 ### Source modes
 
 | Mode | Behaviour |
