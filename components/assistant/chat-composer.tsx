@@ -97,6 +97,7 @@ export function ChatComposer({ mode, onModeChange, onSend, onStop, busy }: ChatC
           <span className="text-xs text-muted-foreground">{composer.shortcutHint}</span>
         </div>
       </div>
+      <p className="mt-1.5 px-1 text-center text-[11px] text-muted-foreground">{composer.privacyNote}</p>
     </form>
   )
 }

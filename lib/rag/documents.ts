@@ -1,4 +1,5 @@
 import { articleHref, projectHref, publishedArticles, publishedProjects, type Article, type Project } from "@/content"
+import { FAQ, FAQ_UPDATED_AT, type FaqEntry } from "@/content/faq"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { absoluteUrl } from "@/lib/site"
 import type { KnowledgeDocument } from "@/lib/rag/types"
@@ -135,12 +136,34 @@ export function articleDocument(article: Article): KnowledgeDocument {
   }
 }
 
+/** One question and answer, written so the question and its other phrasings are embedded with the answer. */
+export function faqDocument(entry: FaqEntry): KnowledgeDocument {
+  return {
+    id: `faq-${entry.id}`,
+    title: entry.question,
+    url: absoluteUrl(entry.href),
+    contentType: "faq",
+    tags: entry.tags,
+    categories: ["FAQ"],
+    publicationStatus: "published",
+    updatedAt: FAQ_UPDATED_AT,
+    text: [
+      `Question: ${entry.question}`,
+      entry.variants.length > 0 ? `Also asked as: ${entry.variants.join(" | ")}` : "",
+      `Answer: ${entry.answer}`,
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  }
+}
+
 /** Every document the assistant may retrieve. Published content only. */
 export function buildKnowledgeDocuments(): KnowledgeDocument[] {
   return [
     ...profileDocuments(),
     ...publishedProjects().map(projectDocument),
     ...publishedArticles().map(articleDocument),
+    ...FAQ.map(faqDocument),
   ].filter((d) => d.publicationStatus === "published")
 }
 

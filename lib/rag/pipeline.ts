@@ -13,6 +13,7 @@ import { PORTFOLIO } from "@/lib/portfolio"
 import { RAG_CONFIG } from "@/lib/rag/config"
 import type { Embedder } from "@/lib/rag/embeddings"
 import { buildInstructions } from "@/lib/rag/prompt"
+import { recordUnanswered, type QuestionStore } from "@/lib/rag/question-log"
 import { retrieve, toSources, type RetrievalResult } from "@/lib/rag/retrieve"
 import { classify, routeFor } from "@/lib/rag/router"
 import { errorClass, type Trace } from "@/lib/rag/telemetry"
@@ -29,6 +30,8 @@ export type ChatDeps = {
   retrieval: { embedder: Embedder; store: VectorStore } | null
   /** Core profile chunks used when the vector store isn't configured. */
   fallbackChunks: () => RetrievedChunk[]
+  /** Saves questions the portfolio couldn't answer, for review. Optional. */
+  questions?: QuestionStore | null
   now?: () => Date
   /** Defaults to RAG_CONFIG.limits.modelTimeoutMs; overridable for tests. */
   modelTimeoutMs?: number
@@ -99,7 +102,10 @@ export function runChat({
         let chunks = retrieval.chunks
         if (route === "out_of_scope") {
           const strong = (retrieval.topScore ?? -1) >= RAG_CONFIG.retrieval.scopeOverrideScore && chunks.length > 0
-          if (!strong) return writeFixedReply(writer, meta("out_of_scope"), replies.outOfScope, trace)
+          if (!strong) {
+            await recordUnanswered(deps.questions, request.question, "out_of_scope")
+            return writeFixedReply(writer, meta("out_of_scope"), replies.outOfScope, trace)
+          }
           route = "technical_rag"
         }
 
@@ -111,10 +117,14 @@ export function runChat({
             return writeFixedReply(writer, meta("no_context"), replies.knowledgeUnavailable, trace)
           } else if (chunks.length === 0) {
             // No evidence: answer without the model rather than risk an invented one.
+            await recordUnanswered(deps.questions, request.question, "no_context")
             return writeFixedReply(writer, meta("no_context"), replies.noContext, trace)
           }
         }
-        if (route === "technical_rag" && chunks.length === 0) route = "general"
+        if (route === "technical_rag" && chunks.length === 0) {
+          route = "general"
+          await recordUnanswered(deps.questions, request.question, "general")
+        }
         trace.set("chunkCount", chunks.length)
 
         await generate({ writer, route, chunks, history, deps, trace, abortSignal, now, meta })

@@ -1,8 +1,8 @@
 import { isAdminRequest } from "@/lib/admin-auth"
-import { buildKnowledgeDocuments } from "@/lib/rag/documents"
 import { createGeminiEmbedder } from "@/lib/rag/embeddings"
 import { readIndexStatus, saveIndexStatus } from "@/lib/rag/index-status"
 import { errorMessage, syncKnowledgeBase } from "@/lib/rag/ingest"
+import { buildAllKnowledgeDocuments } from "@/lib/rag/learned"
 import { createUpstashVectorStore, isVectorStoreConfigured } from "@/lib/rag/vector-store"
 
 // Protected reindex endpoint: syncs the vector store with published content (idempotent).
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
 
   try {
     const report = await syncKnowledgeBase({
-      documents: buildKnowledgeDocuments(),
+      documents: await buildAllKnowledgeDocuments(),
       store: createUpstashVectorStore(),
       embedder: createGeminiEmbedder(),
     })

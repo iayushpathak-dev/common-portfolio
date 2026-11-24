@@ -24,6 +24,8 @@ const NAMES = [
 const PERSONAL = new RegExp(
   [
     String.raw`\b(you|your|yours|yourself|he|his|him)\b`,
+    // Hinglish: "aapne kya banaya", "tumhara experience", "apne baare mein batao"
+    String.raw`\b(aap|aapka|aapki|aapke|aapne|tum|tumhara|tumhari|tumhare|tumne|apne baare)\b`,
     // Only strong signals: generic words like "projects" or "skills" go through retrieval instead.
     String.raw`\b(resume|cv|hire|hiring|availability|notice period|reach out|linkedin|mentor(ing|ed)?)\b`,
     ...NAMES.map((n) => `\\b${escape(n)}\\b`),

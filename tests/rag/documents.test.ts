@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import { ARTICLES, PROJECTS } from "@/content"
+import { FAQ } from "@/content/faq"
+import { chunkDocument } from "@/lib/rag/chunk"
 import { buildKnowledgeDocuments, documentProblem } from "@/lib/rag/documents"
 
 const docs = buildKnowledgeDocuments()
@@ -62,5 +64,38 @@ describe("documentProblem", () => {
     [{ ...valid, publicationStatus: "draft" as const }, "status is draft"],
   ])("rejects malformed documents (%#)", (doc, reason) => {
     expect(documentProblem(doc)).toBe(reason)
+  })
+})
+
+describe("FAQ knowledge", () => {
+  const faqDocs = docs.filter((d) => d.contentType === "faq")
+  const publicPaths = new Set([
+    "/about",
+    "/experience",
+    "/resume",
+    "/projects",
+    "/blog",
+    ...PROJECTS.filter((p) => p.publicationStatus === "published").map((p) => `/projects/${p.slug}`),
+    ...ARTICLES.filter((a) => a.publicationStatus === "published").map((a) => `/blog/${a.slug}`),
+  ])
+
+  it("indexes every FAQ entry as its own document", () => {
+    expect(faqDocs.length).toBe(FAQ.length)
+    for (const d of faqDocs) expect(d.id).toMatch(/^faq-[a-z0-9-]+$/)
+  })
+
+  it("cites only pages that exist publicly", () => {
+    for (const entry of FAQ) expect(publicPaths.has(entry.href), entry.id).toBe(true)
+  })
+
+  it("embeds the question, its variants and the answer together", () => {
+    const doc = faqDocs.find((d) => d.id === "faq-who-is-ayush")!
+    expect(doc.text).toContain("Question: Who is Ayush Pathak?")
+    expect(doc.text).toContain("Tell me about yourself")
+    expect(doc.text).toContain("Answer: ")
+  })
+
+  it("keeps each question and its answer in a single chunk", () => {
+    for (const d of faqDocs) expect(chunkDocument(d).length, d.id).toBe(1)
   })
 })

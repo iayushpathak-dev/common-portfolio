@@ -4,12 +4,13 @@ import { describe, expect, it } from "vitest"
 
 import { PORTFOLIO } from "@/lib/portfolio"
 import { runChat, type ChatDeps } from "@/lib/rag/pipeline"
+import type { QuestionStore } from "@/lib/rag/question-log"
 import { classify } from "@/lib/rag/router"
 import { createTrace } from "@/lib/rag/telemetry"
 import type { RetrievedChunk } from "@/lib/rag/types"
 import { parseChatRequest } from "@/lib/rag/validation"
 import type { VectorStore } from "@/lib/rag/vector-store"
-import { createFakeEmbedder } from "../helpers/fakes"
+import { createFakeEmbedder, createMemoryQuestionStore } from "../helpers/fakes"
 
 const { replies } = PORTFOLIO.chat
 
@@ -82,7 +83,14 @@ function setup({
   model = textModel(),
   webModel,
   configured = true,
-}: { matches?: RetrievedChunk[] | Error; model?: MockLanguageModelV4; webModel?: MockLanguageModelV4; configured?: boolean } = {}) {
+  questions,
+}: {
+  matches?: RetrievedChunk[] | Error
+  model?: MockLanguageModelV4
+  webModel?: MockLanguageModelV4
+  configured?: boolean
+  questions?: QuestionStore
+} = {}) {
   const store = stubStore(matches)
   const searchRequests: boolean[] = []
   const deps: ChatDeps = {
@@ -93,6 +101,7 @@ function setup({
     retrieval: configured ? { embedder: createFakeEmbedder().embedder, store } : null,
     fallbackChunks: () => [chunk("profile-about", 1, "Core profile facts")],
     now: () => new Date("2026-10-18T10:00:00Z"),
+    questions,
   }
   return { deps, store, searchRequests, model }
 }
@@ -284,5 +293,31 @@ describe("runChat: failures and observability", () => {
     expect(res.error?.errorText).toBe(replies.timeout)
     expect(res.sources).toEqual([])
     expect(res.log.error).toBe("model_timeout")
+  })
+})
+
+describe("runChat: unanswered question log", () => {
+  it("saves out-of-scope and no-context questions, but not answered ones", async () => {
+    const { store, pending } = createMemoryQuestionStore()
+
+    await ask(setup({ matches: [chunk("project-x", 0.3)], questions: store }).deps, "Give me a pasta recipe")
+    await ask(setup({ matches: [], questions: store }).deps, "What is your notice period?")
+    await ask(setup({ matches: [chunk("project-fitshop", 0.9)], questions: store }).deps, "Tell me about your Fitshop work")
+    await ask(setup({ questions: store }).deps, "hello")
+
+    const saved = [...pending.values()].map((p) => [p.question, p.route])
+    expect(saved).toEqual(
+      expect.arrayContaining([
+        ["Give me a pasta recipe", "out_of_scope"],
+        ["What is your notice period?", "no_context"],
+      ]),
+    )
+    expect(saved).toHaveLength(2)
+  })
+
+  it("still answers when the question log fails", async () => {
+    const failing = { record: async () => Promise.reject(new Error("redis down")) } as unknown as QuestionStore
+    const res = await ask(setup({ matches: [], questions: failing }).deps, "What is your notice period?")
+    expect(res.text).toBe(replies.noContext)
   })
 })
