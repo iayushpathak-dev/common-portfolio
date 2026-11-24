@@ -10,10 +10,53 @@ const PENDING = "uq:pending"
 const item = (id: string) => `uq:item:${id}`
 const LEARNED = "faq:learned"
 
-/** Unanswered questions and learned answers in Upstash Redis (null when Redis isn't configured). */
+/**
+ * Unanswered questions and learned answers in Upstash Redis. Without Redis: an in-memory store
+ * under `next dev` (lost on restart, for local testing), otherwise null.
+ */
 export function getQuestionStore(): QuestionStore | null {
   const redis = getRedis()
-  return redis ? createRedisQuestionStore(redis) : null
+  if (redis) return createRedisQuestionStore(redis)
+  return process.env.NODE_ENV === "development" ? getDevMemoryStore() : null
+}
+
+// Kept on globalThis so it survives hot reloads and is shared by every route in the dev server.
+const devStore = globalThis as typeof globalThis & { __devQuestionStore?: QuestionStore }
+
+function getDevMemoryStore(): QuestionStore {
+  return (devStore.__devQuestionStore ??= createMemoryQuestionStore())
+}
+
+export function createMemoryQuestionStore(): QuestionStore {
+  const pending = new Map<string, PendingQuestion>()
+  const learned = new Map<string, LearnedFaq>()
+  return {
+    async record({ question, route, at }) {
+      const id = questionId(question)
+      const prev = pending.get(id)
+      pending.set(id, { id, question, route, count: (prev?.count ?? 0) + 1, firstSeen: prev?.firstSeen ?? at, lastSeen: at })
+      if (pending.size > MAX_PENDING) {
+        const oldest = [...pending.values()].sort((a, b) => a.lastSeen - b.lastSeen)[0]
+        pending.delete(oldest.id)
+      }
+    },
+    async listPending(limit) {
+      return [...pending.values()].sort((a, b) => b.lastSeen - a.lastSeen).slice(0, limit)
+    },
+    async dismiss(id) {
+      pending.delete(id)
+    },
+    async saveLearned(entry, answeredQuestionId) {
+      learned.set(entry.id, entry)
+      if (answeredQuestionId) pending.delete(answeredQuestionId)
+    },
+    async listLearned() {
+      return [...learned.values()]
+    },
+    async deleteLearned(id) {
+      learned.delete(id)
+    },
+  }
 }
 
 export function createRedisQuestionStore(redis: Redis): QuestionStore {
