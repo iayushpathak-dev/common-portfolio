@@ -57,6 +57,26 @@ export function getChatRateLimiter(): RateLimiter {
   return limiter
 }
 
+let mcpLimiter: RateLimiter | undefined
+
+/**
+ * Limiter for the public MCP endpoint. Its tools only read static content (no model calls),
+ * so the limit is looser than chat's; it exists to stop scripted abuse, not to protect quota.
+ */
+export function getMcpRateLimiter(): RateLimiter {
+  if (mcpLimiter) return mcpLimiter
+  const requests = 60
+  const windowSeconds = 60
+  const redis = getRedis()
+  mcpLimiter = redis
+    ? (() => {
+        const ratelimit = new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(requests, `${windowSeconds} s`), prefix: "rl:mcp" })
+        return { kind: "redis" as const, limit: (key: string) => ratelimit.limit(key) }
+      })()
+    : createMemoryRateLimiter(requests, windowSeconds * 1000)
+  return mcpLimiter
+}
+
 /** A hashed client identifier, so raw IP addresses are never stored. */
 export function clientKey(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || req.headers.get("x-real-ip") || "unknown"
