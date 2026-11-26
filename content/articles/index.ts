@@ -15,6 +15,22 @@ import productionReadyAiProduct from "./production-ready-ai-product.md"
 import testingAndEvaluatingRag from "./testing-and-evaluating-rag.md"
 import toolCallingAndStructuredOutputs from "./tool-calling-and-structured-outputs.md"
 import vercelAiSdkArchitecture from "./vercel-ai-sdk-architecture.md"
+import frontendAiEngineerRole from "./frontend-ai-engineer-role.md"
+import mcpAppsInteractiveUi from "./mcp-apps-interactive-ui.md"
+import agUiProtocol from "./ag-ui-protocol.md"
+import a2uiDeclarativeGenerativeUi from "./a2ui-declarative-generative-ui.md"
+import webmcpAgentReadyWebsites from "./webmcp-agent-ready-websites.md"
+import chromeBuiltInAiPromptApi from "./chrome-built-in-ai-prompt-api.md"
+import humanInTheLoopToolApproval from "./human-in-the-loop-tool-approval.md"
+import streamingUxPatterns from "./streaming-ux-patterns.md"
+import streamingStructuredObjects from "./streaming-structured-objects.md"
+import aiTrustUxPatterns from "./ai-trust-ux-patterns.md"
+import rateLimitsQuotasAndModelFallbacks from "./rate-limits-quotas-and-model-fallbacks.md"
+import agentReadableWebsites from "./agent-readable-websites.md"
+import testingAiUis from "./testing-ai-uis.md"
+import designSystemsForAiAgents from "./design-systems-for-ai-agents.md"
+import aiFeatureProductMetrics from "./ai-feature-product-metrics.md"
+import inBrowserModelsWebgpu from "./in-browser-models-webgpu.md"
 
 // Every article starts as a draft: it shows in `next dev` only. After reviewing an article,
 // set its publicationStatus to "published" and update updatedAt.
@@ -320,6 +336,316 @@ export const ARTICLES: Article[] = [
     ],
     relatedProjects: [PROJECT_ASSISTANT],
     relatedArticles: ["article-ai-observability", "article-ai-application-security"],
+  }),
+
+  article({
+    slug: "frontend-ai-engineer-role",
+    title: "What a Frontend AI Engineer Actually Does in 2026",
+    summary:
+      "The skill map behind the role: model integration, retrieval, agent UX, quality and safety on top of React, Next.js and TypeScript.",
+    category: "Engineering Workflow",
+    tags: ["AI Engineering", "Career", "React", "Next.js"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "sparkles",
+    featured: true,
+    body: frontendAiEngineerRole,
+    sourceUrls: [
+      { title: "AI SDK documentation", url: "https://ai-sdk.dev/docs" },
+      { title: "Model Context Protocol documentation", url: "https://modelcontextprotocol.io" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-streaming-ux-patterns", "article-ai-trust-ux-patterns", "article-building-ai-chat-interfaces"],
+  }),
+  article({
+    slug: "mcp-apps-interactive-ui",
+    title: "MCP Apps: Shipping Interactive UI Inside AI Assistants",
+    summary:
+      "How the first official MCP extension lets tools return sandboxed, interactive UI that renders inside Claude, ChatGPT and other hosts.",
+    category: "AI Engineering",
+    tags: ["MCP", "MCP Apps", "Generative UI", "Security"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "app-window",
+    body: mcpAppsInteractiveUi,
+    sourceUrls: [
+      { title: "MCP Apps announcement (January 2026)", url: "https://blog.modelcontextprotocol.io/posts/2026-01-26-mcp-apps/" },
+      { title: "MCP Apps SDK documentation", url: "https://apps.extensions.modelcontextprotocol.io/api/" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-generative-ui", "article-ag-ui-protocol", "article-a2ui-declarative-generative-ui"],
+  }),
+  article({
+    slug: "ag-ui-protocol",
+    title: "AG-UI: The Protocol Between AI Agents and Your Frontend",
+    summary:
+      "An event-based protocol for streaming agent messages, tool calls and shared state into user-facing apps, and why the UI becomes a reducer over events.",
+    category: "AI Engineering",
+    tags: ["AG-UI", "Agents", "Streaming", "State"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "activity",
+    body: agUiProtocol,
+    sourceUrls: [
+      { title: "AG-UI documentation", url: "https://docs.ag-ui.com/introduction" },
+      { title: "AG-UI on GitHub", url: "https://github.com/ag-ui-protocol/ag-ui" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-mcp-apps-interactive-ui", "article-human-in-the-loop-tool-approval", "article-agents-vs-workflows"],
+  }),
+  article({
+    slug: "a2ui-declarative-generative-ui",
+    title: "A2UI and Declarative Generative UI",
+    summary:
+      "Agents that describe UI as data from a component catalogue, rendered natively by the client: safer than code, more flexible than one tool per component.",
+    category: "AI Engineering",
+    tags: ["A2UI", "Generative UI", "Design System", "Security"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "boxes",
+    body: a2uiDeclarativeGenerativeUi,
+    sourceUrls: [
+      { title: "Introducing A2UI (Google Developers Blog)", url: "https://developers.googleblog.com/introducing-a2ui-an-open-project-for-agent-driven-interfaces/" },
+      { title: "A2UI on GitHub", url: "https://github.com/google/A2UI" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-generative-ui", "article-design-systems-for-ai-agents", "article-mcp-apps-interactive-ui"],
+  }),
+  article({
+    slug: "webmcp-agent-ready-websites",
+    title: "WebMCP: Letting Browser Agents Call Your Website's Tools",
+    summary:
+      "Registering typed tools on navigator.modelContext so in-browser agents call explicit contracts instead of scraping the DOM.",
+    category: "AI Engineering",
+    tags: ["WebMCP", "Agents", "Browser APIs", "Security"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "plug",
+    body: webmcpAgentReadyWebsites,
+    sourceUrls: [
+      { title: "WebMCP explainer", url: "https://github.com/webmachinelearning/webmcp" },
+      { title: "WebMCP specification draft", url: "https://webmachinelearning.github.io/webmcp" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-agent-readable-websites", "article-human-in-the-loop-tool-approval"],
+  }),
+  article({
+    slug: "chrome-built-in-ai-prompt-api",
+    title: "On-Device AI with Chrome's Prompt API and Gemini Nano",
+    summary:
+      "Using Chrome's built-in model for narrow tasks without a server: availability checks, download progress, streaming and a cloud fallback.",
+    category: "AI Engineering",
+    tags: ["Built-in AI", "Gemini Nano", "On-device", "Privacy"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "cpu",
+    body: chromeBuiltInAiPromptApi,
+    sourceUrls: [
+      { title: "Chrome: The Prompt API", url: "https://developer.chrome.com/docs/ai/prompt-api" },
+      { title: "AI with Chrome", url: "https://developer.chrome.com/docs/ai" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-in-browser-models-webgpu", "article-how-llms-work"],
+  }),
+  article({
+    slug: "human-in-the-loop-tool-approval",
+    title: "Human-in-the-Loop: Designing Tool Approval UI for Agents",
+    summary:
+      "Risk tiers, approval states in the tool lifecycle, consequence-first copy and server-side enforcement for agents that take actions.",
+    category: "AI Engineering",
+    tags: ["Agents", "Tool Calling", "UX", "Security"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "shield",
+    body: humanInTheLoopToolApproval,
+    sourceUrls: [
+      { title: "AI SDK 6: agents and tool execution approval", url: "https://vercel.com/blog/ai-sdk-6" },
+      { title: "AI SDK documentation", url: "https://ai-sdk.dev/docs" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-tool-calling-and-structured-outputs", "article-agents-vs-workflows", "article-ag-ui-protocol"],
+  }),
+  article({
+    slug: "streaming-ux-patterns",
+    title: "Streaming UX: Designing for Latency in AI Interfaces",
+    summary:
+      "The first second of an AI answer: optimistic messages, status lines, stable layout, stop controls and accessible completion announcements.",
+    category: "AI Engineering",
+    tags: ["Streaming", "UX", "Accessibility", "Performance"],
+    publicationStatus: "draft",
+    learningStatus: "Hands-on Implementation",
+    updatedAt: "2026-11-26",
+    icon: "gauge",
+    featured: true,
+    body: streamingUxPatterns,
+    sourceUrls: [
+      { title: "AI SDK UI: Chatbot", url: "https://ai-sdk.dev/docs/ai-sdk-ui/chatbot" },
+      { title: "Chrome: Render LLM responses", url: "https://developer.chrome.com/docs/ai/render-llm-responses" },
+      { title: "MDN: AbortController", url: "https://developer.mozilla.org/en-US/docs/Web/API/AbortController" },
+    ],
+    relatedProjects: [PROJECT_ASSISTANT],
+    relatedArticles: ["article-building-ai-chat-interfaces", "article-ai-trust-ux-patterns", "article-testing-ai-uis"],
+  }),
+  article({
+    slug: "streaming-structured-objects",
+    title: "Streaming Structured Objects into React Components",
+    summary:
+      "Rendering partial, schema-defined JSON as it streams: defensive rendering, element-by-element updates and validating only the final object.",
+    category: "AI Engineering",
+    tags: ["Structured Output", "Streaming", "Zod", "React"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "layers",
+    body: streamingStructuredObjects,
+    sourceUrls: [
+      { title: "AI SDK Core: Generating structured data", url: "https://ai-sdk.dev/docs/ai-sdk-core/generating-structured-data" },
+      { title: "Zod documentation", url: "https://zod.dev" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-tool-calling-and-structured-outputs", "article-streaming-ux-patterns"],
+  }),
+  article({
+    slug: "ai-trust-ux-patterns",
+    title: "Trust UX for AI Features: Sources, Scope and Feedback",
+    summary:
+      "Patterns that help users trust AI answers the right amount: provenance, scope statements, abstention, editability and feedback tied to requests.",
+    category: "AI Engineering",
+    tags: ["UX", "Citations", "Feedback", "RAG"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "message-square",
+    body: aiTrustUxPatterns,
+    sourceUrls: [
+      { title: "Google People + AI Guidebook", url: "https://pair.withgoogle.com/guidebook/" },
+      { title: "Microsoft Guidelines for Human-AI Interaction", url: "https://www.microsoft.com/en-us/research/project/guidelines-for-human-ai-interaction/" },
+    ],
+    relatedProjects: [PROJECT_ASSISTANT],
+    relatedArticles: ["article-building-rag-from-scratch", "article-ai-feature-product-metrics", "article-streaming-ux-patterns"],
+  }),
+  article({
+    slug: "rate-limits-quotas-and-model-fallbacks",
+    title: "Rate Limits, Quotas, Timeouts and Model Fallbacks",
+    summary:
+      "Treating provider failures as normal states: own rate limits, timeouts, error classification, fallbacks and specific user-facing messages.",
+    category: "AI Engineering",
+    tags: ["Reliability", "Rate Limiting", "Gemini", "Error Handling"],
+    publicationStatus: "draft",
+    learningStatus: "Hands-on Implementation",
+    updatedAt: "2026-11-26",
+    icon: "refresh",
+    body: rateLimitsQuotasAndModelFallbacks,
+    sourceUrls: [
+      { title: "Gemini API rate limits", url: "https://ai.google.dev/gemini-api/docs/rate-limits" },
+      { title: "Upstash Ratelimit", url: "https://upstash.com/docs/redis/sdks/ratelimit-ts/overview" },
+    ],
+    relatedProjects: [PROJECT_ASSISTANT],
+    relatedArticles: ["article-production-ready-ai-product", "article-ai-observability", "article-hybrid-ai-assistant"],
+  }),
+  article({
+    slug: "agent-readable-websites",
+    title: "Making Websites Readable for AI Agents",
+    summary:
+      "Server rendering, semantic HTML, JSON-LD, sitemaps and llms.txt: what helps AI systems read and use a site, and what to keep out.",
+    category: "Architecture",
+    tags: ["SEO", "Accessibility", "Structured Data", "Agents"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "search",
+    body: agentReadableWebsites,
+    sourceUrls: [
+      { title: "schema.org: TechArticle", url: "https://schema.org/TechArticle" },
+      { title: "The llms.txt proposal", url: "https://llmstxt.org" },
+      { title: "Next.js: JSON-LD", url: "https://nextjs.org/docs/app/guides/json-ld" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-webmcp-agent-ready-websites", "article-ai-trust-ux-patterns"],
+  }),
+  article({
+    slug: "testing-ai-uis",
+    title: "Testing AI UIs Without Calling the Model",
+    summary:
+      "Scripted streams and mock providers for testing streaming, error, stop and approval states, kept separate from model-quality evals.",
+    category: "AI Engineering",
+    tags: ["Testing", "Vitest", "Playwright", "Streaming"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "flask",
+    body: testingAiUis,
+    sourceUrls: [
+      { title: "AI SDK: Testing", url: "https://ai-sdk.dev/docs/ai-sdk-core/testing" },
+      { title: "Testing Library", url: "https://testing-library.com/docs/react-testing-library/intro/" },
+      { title: "Playwright: Mock APIs", url: "https://playwright.dev/docs/mock" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-testing-and-evaluating-rag", "article-streaming-ux-patterns"],
+  }),
+  article({
+    slug: "design-systems-for-ai-agents",
+    title: "Design Systems for AI Agents",
+    summary:
+      "Making a design system usable by coding agents and generative UI: semantic tokens, typed variants, instruction files, a small catalogue and lint rules.",
+    category: "Architecture",
+    tags: ["Design System", "Generative UI", "Claude Code", "TypeScript"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "layout-dashboard",
+    body: designSystemsForAiAgents,
+    sourceUrls: [
+      { title: "AGENTS.md", url: "https://agents.md" },
+      { title: "Claude Code: memory and CLAUDE.md", url: "https://docs.claude.com/en/docs/claude-code/memory" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-a2ui-declarative-generative-ui", "article-engineering-with-claude-code", "article-generative-ui"],
+  }),
+  article({
+    slug: "ai-feature-product-metrics",
+    title: "Product Metrics for AI Features",
+    summary:
+      "Measuring whether an AI feature helps: outcome events, acceptance, stops and rephrases, cost per success and keeping message text out of analytics.",
+    category: "AI Engineering",
+    tags: ["Analytics", "Product", "Observability", "Privacy"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "activity",
+    body: aiFeatureProductMetrics,
+    sourceUrls: [
+      { title: "GA4: Recommended events", url: "https://support.google.com/analytics/answer/9267735" },
+      { title: "Google People + AI Guidebook: Feedback and control", url: "https://pair.withgoogle.com/chapter/feedback-controls/" },
+    ],
+    relatedProjects: [PROJECT_ASSISTANT],
+    relatedArticles: ["article-ai-observability", "article-ai-trust-ux-patterns"],
+  }),
+  article({
+    slug: "in-browser-models-webgpu",
+    title: "Running Small Models in the Browser with WebGPU",
+    summary:
+      "Embeddings, classification and small models in a Web Worker with Transformers.js: caching, progress, fallbacks and when the download is worth it.",
+    category: "AI Engineering",
+    tags: ["WebGPU", "Transformers.js", "On-device", "Embeddings"],
+    publicationStatus: "draft",
+    learningStatus: "Learning Notes",
+    updatedAt: "2026-11-26",
+    icon: "cpu",
+    body: inBrowserModelsWebgpu,
+    sourceUrls: [
+      { title: "Transformers.js documentation", url: "https://huggingface.co/docs/transformers.js" },
+      { title: "MDN: WebGPU API", url: "https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API" },
+    ],
+    relatedProjects: [],
+    relatedArticles: ["article-chrome-built-in-ai-prompt-api", "article-embeddings-and-vector-databases"],
   }),
 
   // Planned topics: listed on the blog as upcoming, with no article page yet.
