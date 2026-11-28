@@ -23,7 +23,7 @@ This article covers how we send the same events to three tools from one call, an
 - **Conversions API (CAPI)**: Meta's server-to-server endpoint for events. It isn't affected by ad blockers.
 - **`event_id`**: an id you choose for each event. If the Pixel and CAPI send the same event name with the same `event_id`, Meta counts it once.
 - **`fbp` / `fbc`**: Meta's first-party cookies (browser id and click id). Sending them with server events lets Meta match the event to the ad click.
-- **Normalised hashing**: lowercase and trim, then SHA-256. Phone numbers in E.164 format (`+91…`) before hashing.
+- **Normalised hashing**: lowercase and trim, then SHA-256. Phone numbers converted to E.164 format (country code first, no spaces) before hashing.
 
 ## Technical explanation
 
