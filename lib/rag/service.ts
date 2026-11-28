@@ -3,7 +3,7 @@ import "server-only"
 import { chunkDocument } from "@/lib/rag/chunk"
 import { buildKnowledgeDocuments } from "@/lib/rag/documents"
 import { createGeminiEmbedder, withQueryCache } from "@/lib/rag/embeddings"
-import { googleModels } from "@/lib/rag/models"
+import { selectModels } from "@/lib/rag/models"
 import { getQuestionStore } from "@/lib/rag/question-store"
 import type { ChatDeps } from "@/lib/rag/pipeline"
 import type { RetrievedChunk } from "@/lib/rag/types"
@@ -24,7 +24,7 @@ function fallbackChunks(): RetrievedChunk[] {
 export function getChatDeps(): ChatDeps {
   if (!deps) {
     deps = {
-      models: googleModels,
+      models: selectModels(),
       retrieval: isVectorStoreConfigured()
         ? { embedder: withQueryCache(createGeminiEmbedder()), store: createUpstashVectorStore() }
         : null,
