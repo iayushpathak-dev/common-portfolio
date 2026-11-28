@@ -86,6 +86,17 @@ describe("retrieve", () => {
     expect(result.topScore).toBeGreaterThan(0.2)
   })
 
+  it("sends the question text straight to a store that embeds text itself", async () => {
+    const store = new MemoryVectorStore({ embedsText: true })
+    await store.upsert([
+      match("pwa:0", 0, {}, "Partners Studio progressive web app offline support service workers cache"),
+      match("bff:0", 0, {}, "Backend for frontend route handlers grpc business logic"),
+    ])
+    const result = await retrieve("How does offline support with service workers work?", { embedder: null, store }, { minScore: 0.2 })
+    expect(result.chunks[0].metadata.documentId).toBe("pwa")
+    expect(store.textQueries).toBe(1)
+  })
+
   it("times out instead of hanging when the provider is slow", async () => {
     const store = await storeWith({ a: "anything" })
     const { embedder } = createFakeEmbedder({ delayMs: 500 })

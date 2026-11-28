@@ -20,6 +20,27 @@ const doc = (id: string, text: string, overrides: Partial<KnowledgeDocument> = {
 const long = (word: string) => `## Part one\n\n${`${word} one. `.repeat(150)}\n\n## Part two\n\n${`${word} two. `.repeat(150)}`
 
 describe("syncKnowledgeBase", () => {
+  it("works without an embedder when the store embeds text itself (Upstash built-in model)", async () => {
+    const store = new MemoryVectorStore({ embedsText: true })
+    const docs = [doc("a", long("alpha")), doc("b", long("beta"))]
+
+    const first = await syncKnowledgeBase({ documents: docs, store, embedder: null })
+    expect(first).toMatchObject({ ok: true, deleted: 0, unchanged: 0 })
+    expect(first.upserted).toBe(first.chunks)
+    expect(store.records.size).toBe(first.chunks)
+
+    const second = await syncKnowledgeBase({ documents: docs, store, embedder: null })
+    expect(second).toMatchObject({ ok: true, upserted: 0, unchanged: first.chunks })
+  })
+
+  it("reports a failure instead of crashing when a vector-only store has no embedder", async () => {
+    const store = new MemoryVectorStore()
+    const report = await syncKnowledgeBase({ documents: [doc("a", long("alpha"))], store, embedder: null })
+    expect(report.ok).toBe(false)
+    expect(report.upserted).toBe(0)
+    expect(report.failed[0].error).toContain("no embedder")
+  })
+
   it("indexes everything on the first run and nothing on the second (idempotent)", async () => {
     const store = new MemoryVectorStore()
     const { embedder, calls } = createFakeEmbedder()

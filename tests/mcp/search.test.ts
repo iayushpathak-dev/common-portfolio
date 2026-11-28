@@ -31,6 +31,7 @@ const { searchPortfolio } = await import("@/lib/mcp/search")
 
 function storeReturning(chunks: RetrievedChunk[] | Error) {
   return {
+    embedsText: false,
     async query() {
       if (chunks instanceof Error) throw chunks
       return chunks

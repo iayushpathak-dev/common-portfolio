@@ -3,6 +3,9 @@ import type { Embedder } from "@/lib/rag/embeddings"
 import type { RetrievedChunk, SourceLink } from "@/lib/rag/types"
 import type { VectorStore } from "@/lib/rag/vector-store"
 
+/** What retrieval needs. `embedder` is null when the store embeds text itself. */
+export type RetrievalDeps = { embedder: Embedder | null; store: VectorStore }
+
 export type RetrievalOptions = {
   topK?: number
   minScore?: number
@@ -50,16 +53,17 @@ export function selectChunks(
 
 export async function retrieve(
   query: string,
-  { embedder, store }: { embedder: Embedder; store: VectorStore },
+  { embedder, store }: RetrievalDeps,
   options: RetrievalOptions = {},
 ): Promise<RetrievalResult> {
   const topK = options.topK ?? RAG_CONFIG.retrieval.topK
   const timeoutMs = options.timeoutMs ?? RAG_CONFIG.limits.retrievalTimeoutMs
 
-  const matches = await withTimeout(
-    (signal) => embedder.embedQuery(query, signal).then((vector) => store.query(vector, topK)),
-    timeoutMs,
-  )
+  const matches = await withTimeout(async (signal) => {
+    if (store.embedsText) return store.query(query, topK)
+    if (!embedder) throw new Error("no embedder configured for a vector-only store")
+    return store.query(await embedder.embedQuery(query, signal), topK)
+  }, timeoutMs)
   return {
     chunks: selectChunks(matches, options),
     topScore: matches.length > 0 ? Math.max(...matches.map((m) => m.score)) : null,

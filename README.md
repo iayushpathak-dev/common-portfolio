@@ -217,7 +217,7 @@ The assistant answers from **published portfolio content** using retrieval-augme
 | Piece | Choice | Why |
 |---|---|---|
 | Chat model | Gemma/Gemini via `@ai-sdk/google` (`GEMINI_MODEL`) | Existing integration, free tier |
-| Embeddings | `gemini-embedding-001`, 768 dimensions | Same API key; 768 keeps storage and queries small |
+| Embeddings | Upstash built-in `openai/text-embedding-3-small` (1536 dims) | The index embeds text itself: no embedding key, no extra bill. Set `RAG_EMBEDDING_PROVIDER=gemini` to use `gemini-embedding-001` (768 dims) instead |
 | Vector database | Upstash Vector (cosine) | REST API works from Vercel functions, metadata filters, free tier |
 | Rate limiting, index status | Upstash Redis + `@upstash/ratelimit` | Serverless instances don't share memory |
 | Web search | Google Search grounding (`lib/rag/models.ts`) | Already integrated; replaceable behind `ModelFactory` |
@@ -243,7 +243,7 @@ The assistant answers from **published portfolio content** using retrieval-augme
 
 ### Setup
 
-1. Create an **Upstash Vector** index: **768 dimensions, COSINE** metric. Copy its REST URL and token.
+1. Create an **Upstash Vector** index: type **Dense**, embedding model **openai/text-embedding-3-small**, metric **COSINE**. Copy its REST URL and token. (With `RAG_EMBEDDING_PROVIDER=gemini`, create a **Custom, 768 dimensions** index instead.)
 2. Create an **Upstash Redis** database (same account). Copy its REST URL and token.
 3. Generate an admin secret: `openssl rand -hex 32`.
 4. Add to `.env.local` and to Vercel (Production): `UPSTASH_VECTOR_REST_URL`, `UPSTASH_VECTOR_REST_TOKEN`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`, `RAG_ADMIN_SECRET` (see `.env.example` for optional tuning variables).
@@ -253,7 +253,7 @@ The assistant answers from **published portfolio content** using retrieval-augme
 ### Free tiers and cost (verify current limits before relying on them)
 
 - **Upstash Vector free plan** (checked Oct 2026): 10,000 queries + updates per day, 1 GB data, up to 1536 dimensions. Each chat question that reaches retrieval = 1 query; a full first index ≈ one update per chunk; later reindexes only touch changed chunks.
-- **Gemini API**: free-tier rate limits apply per model to chat, embeddings and search grounding separately; check AI Studio for current numbers. Per question: 1 embedding call (skipped on cache hit) + 1 generation (+ search on the web route).
+- **Gemini API**: free-tier rate limits apply per model to chat, embeddings and search grounding separately; check AI Studio for current numbers. Per question: 1 generation (+ search on the web route). Query embedding happens inside Upstash (1 vector query), unless `RAG_EMBEDDING_PROVIDER=gemini`.
 - **Estimate**: `daily cost ≈ questions × (input tokens × input price + output tokens × output price) + search calls × search price`, with token counts taken from the `chat_request` logs.
 - **Vercel Hobby**: the chat route declares `maxDuration = 60`.
 
