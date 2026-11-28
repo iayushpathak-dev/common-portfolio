@@ -1,8 +1,10 @@
 import { createMcpHandler } from "mcp-handler"
+import { after } from "next/server"
 import { z } from "zod"
 
 import { ARTICLE_CATEGORIES, getArticle, getProfile, getProjectDetails, listArticles, listProjects } from "@/lib/mcp/portfolio-tools"
 import { searchPortfolio } from "@/lib/mcp/search"
+import { scheduleIndexSync } from "@/lib/rag/auto-sync"
 import { clientKey, getMcpRateLimiter } from "@/lib/rate-limit"
 
 /**
@@ -129,6 +131,7 @@ async function handler(req: Request) {
     const retryAfter = Math.max(1, Math.ceil((limit.reset - Date.now()) / 1000))
     return Response.json({ error: "Too many requests" }, { status: 429, headers: { "Retry-After": String(retryAfter) } })
   }
+  if (req.method === "POST") scheduleIndexSync(after)
   return mcpHandler(req)
 }
 

@@ -243,6 +243,8 @@ The assistant answers from **published portfolio content** using retrieval-augme
 
 ### Setup
 
+> **Automatic sync:** the site keeps the index in step by itself. The first chat or MCP request an instance serves (then at most every 10 minutes) compares a fingerprint of the content with the one saved after the last sync, and if they differ it syncs in the background (`lib/rag/auto-sync.ts`, Redis lock so only one instance runs it). `npm run rag:reindex` still works for a manual run.
+
 1. Create an **Upstash Vector** index: type **Dense**, embedding model **openai/text-embedding-3-small**, metric **COSINE**. Copy its REST URL and token. (With `RAG_EMBEDDING_PROVIDER=gemini`, create a **Custom, 768 dimensions** index instead.)
 2. Create an **Upstash Redis** database (same account). Copy its REST URL and token.
 3. Generate an admin secret: `openssl rand -hex 32`.
