@@ -18,7 +18,7 @@ import { classify, routeFor } from "@/lib/rag/router"
 import { errorClass, type Trace } from "@/lib/rag/telemetry"
 import type { ChatRoute, RetrievedChunk } from "@/lib/rag/types"
 import type { HistoryMessage, ParsedChatRequest } from "@/lib/rag/validation"
-import type { ModelFactory } from "@/lib/rag/models"
+import type { ModelChoice, ModelFactory } from "@/lib/rag/models"
 
 const { replies } = PORTFOLIO.chat
 
@@ -160,20 +160,34 @@ async function generate({
   const timeout = AbortSignal.timeout(deps.modelTimeoutMs ?? RAG_CONFIG.limits.modelTimeoutMs)
   const signal = abortSignal ? AbortSignal.any([abortSignal, timeout]) : timeout
 
-  const start = (r: ChatRoute, searchUnavailable = false) => {
-    const { model, tools, providerOptions } = deps.models({ webSearch: r === "web_search" })
-    return streamText({
-      model,
-      tools,
-      providerOptions,
+  const startWith = (choice: Omit<ModelChoice, "fallback">, r: ChatRoute, searchUnavailable: boolean, maxRetries: number) =>
+    streamText({
+      model: choice.model,
+      tools: choice.tools,
+      providerOptions: choice.providerOptions,
       instructions: buildInstructions({ route: r, chunks, today: now(), searchUnavailable }),
       messages: history,
       maxOutputTokens: RAG_CONFIG.limits.maxOutputTokens,
       abortSignal: signal,
-      // Retrying a quota error only burns more quota; the web route falls back instead.
-      maxRetries: r === "web_search" ? 0 : 1,
+      maxRetries,
     }).stream
+
+  /**
+   * Starts the answer. If the model fails before its first token and a fallback model exists,
+   * answers with the fallback instead (the primary isn't retried: a busy provider usually stays
+   * busy for a while, and the fallback is faster than waiting).
+   */
+  const start = async (r: ChatRoute, searchUnavailable = false) => {
+    const choice = deps.models({ webSearch: false })
+    if (!choice.fallback) return startWith(choice, r, searchUnavailable, 1)
+    const attempt = await peekForError(startWith(choice, r, searchUnavailable, 0))
+    if (!attempt.error) return attempt.stream
+    trace.set("fallback", errorClass(attempt.error))
+    return startWith(choice.fallback, r, searchUnavailable, 1)
   }
+
+  // Retrying a quota error only burns more quota; the web route falls back instead.
+  const startSearch = () => startWith(deps.models({ webSearch: true }), "web_search", false, 0)
 
   let searchUnavailable = false
   let stream: ReadableStream<TextStreamPart<ToolSet>>
@@ -182,17 +196,17 @@ async function generate({
   if (route === "web_search") {
     // Search grounding has its own small quota and can fail on its own. If it does, answer
     // without search (clearly flagged) instead of failing the whole request.
-    const attempt = await peekForError(start("web_search"))
+    const attempt = await peekForError(startSearch())
     if (attempt.error) {
       trace.set("error", `search_${errorClass(attempt.error)}`)
       searchUnavailable = true
       route = chunks.length > 0 ? "technical_rag" : "general"
-      stream = start(route, true)
+      stream = await start(route, true)
     } else {
       stream = attempt.stream
     }
   } else {
-    stream = start(route)
+    stream = await start(route)
   }
 
   trace.set("route", route)
