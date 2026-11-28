@@ -76,7 +76,7 @@ export function QuestionsAdmin() {
   if (!data) {
     return (
       <main className="mx-auto flex max-w-md flex-col gap-3 p-6">
-        <h1 className="text-xl font-semibold">Assistant questions</h1>
+        <h1 className="text-xl font-semibold">User questions</h1>
         <p className="text-sm text-muted-foreground">Enter the admin secret (RAG_ADMIN_SECRET) to review questions.</p>
         <input
           type="password"
@@ -97,7 +97,7 @@ export function QuestionsAdmin() {
   return (
     <main className="mx-auto flex max-w-3xl flex-col gap-6 p-6">
       <header className="flex items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold">Assistant questions</h1>
+        <h1 className="text-xl font-semibold">User questions</h1>
         <Button variant="outline" size="sm" onClick={() => load()} disabled={busy}>
           Refresh
         </Button>

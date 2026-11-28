@@ -275,7 +275,7 @@ The assistant answers from **published portfolio content** using retrieval-augme
 
 - `content/faq.ts`: hand-written questions and answers (with other phrasings) grounded in published content. Each entry is one knowledge document.
 - When a question gets no answer from the portfolio (routes `no_context`, `out_of_scope`, `general`), it is saved in Upstash Redis with emails, links and long numbers removed, and counted when asked again (`lib/rag/question-log.ts`, `lib/rag/question-store.ts`). Visitors see a short note under the chat box.
-- Review them at `/admin/questions` (enter `RAG_ADMIN_SECRET`). Write an answer, pick the page to cite, save: it becomes a "learned" FAQ entry and the vector index is re-synced right away. Dismiss questions you don't want to answer.
+- Review them at `/userquestions` (enter `RAG_ADMIN_SECRET`; the old `/admin/questions` URL redirects there). Write an answer, pick the page to cite, save: it becomes a "learned" FAQ entry and the vector index is re-synced right away. Dismiss questions you don't want to answer.
 - Learned answers live in Redis and are included in every reindex (`lib/rag/learned.ts`), so they survive deploys.
 
 ### Source modes
@@ -374,3 +374,16 @@ Commits use the personal email `ayushpathakhaldwani@gmail.com` (set in this repo
 
 **Cleanup**
 - [ ] Unused UI components (`components/ui/badge.tsx`, `scroll-area.tsx`, `textarea.tsx`) can be removed.
+
+
+## Private job-search dashboard (`/findjobs`)
+
+A private page for the job search with a username/password login (`FINDJOBS_USERNAME`, `FINDJOBS_PASSWORD`, at least 8 characters). A correct login sets an httpOnly, `SameSite=Strict` cookie signed with the credentials, valid for 7 days; changing the password logs every browser out. Logins are limited to 5 attempts per 15 minutes per client. The page is `noindex` and disallowed in `robots.txt`.
+
+- **Overview:** counts per status, follow-ups due or overdue, companies still to contact, prep progress.
+- **Applications:** company, role, link, source, status (saved → applied → interviewing → offer / rejected / withdrawn), dates, salary notes and notes.
+- **Find jobs:** searches Adzuna India (`ADZUNA_APP_ID`, `ADZUNA_APP_KEY`; free keys at developer.adzuna.com) from the server, so the key never reaches the browser. Results are cached for 10 minutes; **Save** adds a job to Applications with a follow-up for today.
+- **Companies:** target companies per city with stack, careers link, contact and outreach status.
+- **Interview prep:** a fixed checklist (`lib/jobs/prep-topics.ts`) with done/notes per topic.
+
+Data lives in Upstash Redis hashes `fj:applications`, `fj:companies` and `fj:prep` (up to 1,000 items each). Under `next dev` without Redis it is kept in memory and lost on restart. API: `GET/POST /api/findjobs`, `GET /api/findjobs/search` (both need the login cookie), `POST /api/findjobs/login`, `POST /api/findjobs/logout`. Code: `lib/jobs/`, `components/findjobs/`, `app/findjobs/`.

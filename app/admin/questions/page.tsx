@@ -1,13 +1,6 @@
-import { QuestionsAdmin } from "@/components/admin/questions-admin"
-import { pageMetadata } from "@/lib/seo"
+import { permanentRedirect } from "next/navigation"
 
-export const metadata = pageMetadata({
-  title: "Assistant questions — admin",
-  description: "Review questions the assistant couldn't answer.",
-  path: "/admin/questions",
-  noIndex: true,
-})
-
+// Moved to /userquestions.
 export default function QuestionsAdminPage() {
-  return <QuestionsAdmin />
+  permanentRedirect("/userquestions")
 }
