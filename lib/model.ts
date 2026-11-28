@@ -6,14 +6,19 @@ export const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemma-4-26b-a4b-it"
 /** Claude model for normal answers, used when ANTHROPIC_API_KEY is set. */
 export const ANSWER_MODEL = process.env.ANSWER_MODEL ?? "claude-haiku-5-5"
 
-/** Gemini model for the web-search route when Claude answers everything else. */
-export const SEARCH_MODEL = process.env.SEARCH_MODEL ?? "gemini-3.1-flash-lite"
+/**
+ * Google model for the web-search route when Claude answers everything else. Defaults to the
+ * free Gemma model: gemini-* models need billing on the Google project (the free tier returned
+ * 429 quota errors). Set SEARCH_MODEL=gemini-3.1-flash-lite once billing is on.
+ */
+export const SEARCH_MODEL = process.env.SEARCH_MODEL ?? GEMINI_MODEL
 
 /**
  * Answers with this Google model when the main one fails before replying (busy, quota, outage).
  * Set FALLBACK_MODEL="" to turn the fallback off.
  */
-export const FALLBACK_MODEL = process.env.FALLBACK_MODEL ?? "gemini-3.1-flash-lite"
+export const FALLBACK_MODEL =
+  process.env.FALLBACK_MODEL ?? (process.env.ANTHROPIC_API_KEY ? GEMINI_MODEL : "gemini-3.1-flash-lite")
 
 /** True when answers go to Claude; false keeps the Gemini/Gemma-only setup. */
 export const usesClaude = () => Boolean(process.env.ANTHROPIC_API_KEY)

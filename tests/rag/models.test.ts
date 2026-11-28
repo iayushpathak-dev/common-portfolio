@@ -45,4 +45,20 @@ describe("model selection", () => {
     const { selectModels } = await load()
     expect(id(selectModels()({ webSearch: false }).model)).toBe("anthropic:claude-haiku-5-5")
   })
+
+  it("with Claude, defaults web search and the fallback to the free Gemma model", async () => {
+    vi.stubEnv("ANTHROPIC_API_KEY", "test-key")
+    vi.stubEnv("GEMINI_MODEL", "gemma-4-26b-a4b-it")
+    vi.stubEnv("SEARCH_MODEL", undefined as unknown as string)
+    vi.stubEnv("FALLBACK_MODEL", undefined as unknown as string)
+    const { selectModels } = await load()
+    const models = selectModels()
+
+    const answer = models({ webSearch: false })
+    expect(id(answer.fallback!.model)).toBe("google:gemma-4-26b-a4b-it")
+    expect(answer.fallback!.providerOptions).toEqual({ google: { thinkingConfig: { thinkingLevel: "minimal" } } })
+
+    // Gemma search goes through the provider that adds the googleSearch tool to the request.
+    expect(id(models({ webSearch: true }).model)).toBe("google:gemma-4-26b-a4b-it")
+  })
 })
