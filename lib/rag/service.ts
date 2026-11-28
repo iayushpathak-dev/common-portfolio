@@ -2,12 +2,11 @@ import "server-only"
 
 import { chunkDocument } from "@/lib/rag/chunk"
 import { buildKnowledgeDocuments } from "@/lib/rag/documents"
-import { createGeminiEmbedder, withQueryCache } from "@/lib/rag/embeddings"
+import { createKnowledgeIndex, isKnowledgeIndexConfigured } from "@/lib/rag/knowledge-index"
 import { googleModels } from "@/lib/rag/models"
 import { getQuestionStore } from "@/lib/rag/question-store"
 import type { ChatDeps } from "@/lib/rag/pipeline"
 import type { RetrievedChunk } from "@/lib/rag/types"
-import { createUpstashVectorStore, isVectorStoreConfigured } from "@/lib/rag/vector-store"
 
 // Wires the real providers together. Kept separate from the pipeline so tests can inject fakes.
 
@@ -25,9 +24,7 @@ export function getChatDeps(): ChatDeps {
   if (!deps) {
     deps = {
       models: googleModels,
-      retrieval: isVectorStoreConfigured()
-        ? { embedder: withQueryCache(createGeminiEmbedder()), store: createUpstashVectorStore() }
-        : null,
+      retrieval: isKnowledgeIndexConfigured() ? createKnowledgeIndex({ cacheQueries: true }) : null,
       fallbackChunks,
       questions: getQuestionStore(),
     }

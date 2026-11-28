@@ -1,11 +1,10 @@
 import { isAdminRequest } from "@/lib/admin-auth"
-import { createGeminiEmbedder } from "@/lib/rag/embeddings"
 import { saveIndexStatus } from "@/lib/rag/index-status"
 import { errorMessage, syncKnowledgeBase } from "@/lib/rag/ingest"
 import { buildAllKnowledgeDocuments, citablePaths } from "@/lib/rag/learned"
 import { parseAdminAction } from "@/lib/rag/question-log"
 import { getQuestionStore } from "@/lib/rag/question-store"
-import { createUpstashVectorStore, isVectorStoreConfigured } from "@/lib/rag/vector-store"
+import { createKnowledgeIndex, isKnowledgeIndexConfigured } from "@/lib/rag/knowledge-index"
 
 // Review queue for questions the assistant couldn't answer. Protected by RAG_ADMIN_SECRET.
 // GET lists pending questions and learned answers; POST answers, dismisses or deletes.
@@ -46,14 +45,13 @@ export async function POST(req: Request) {
   if (action.action === "answer") await store.saveLearned(action.entry, action.answeredQuestionId)
   if (action.action === "delete") await store.deleteLearned(action.id)
 
-  if (!isVectorStoreConfigured() || !process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!isKnowledgeIndexConfigured()) {
     return Response.json({ ok: true, indexed: false, note: "Saved. It will be indexed once the vector store is configured." })
   }
   try {
     const report = await syncKnowledgeBase({
       documents: await buildAllKnowledgeDocuments(),
-      store: createUpstashVectorStore(),
-      embedder: createGeminiEmbedder(),
+      ...createKnowledgeIndex(),
     })
     await saveIndexStatus(report)
     return Response.json({ ok: report.ok, indexed: true, report })

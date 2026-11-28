@@ -47,19 +47,35 @@ export function createFakeEmbedder(options: { failOn?: (text: string) => boolean
   return { embedder, calls }
 }
 
+/**
+ * In-memory store. With `embedsText` it behaves like an Upstash index with a built-in model:
+ * it embeds upserted text and text queries itself (using fakeVector).
+ */
 export class MemoryVectorStore implements VectorStore {
   records = new Map<string, VectorRecord>()
   failQuery = false
+  readonly embedsText: boolean
+  textQueries = 0
 
-  async upsert(records: VectorRecord[]) {
-    for (const r of records) this.records.set(r.id, r)
+  constructor({ embedsText = false }: { embedsText?: boolean } = {}) {
+    this.embedsText = embedsText
   }
 
-  async query(vector: number[], topK: number): Promise<RetrievedChunk[]> {
+  async upsert(records: VectorRecord[]) {
+    for (const r of records) {
+      if (!this.embedsText && !r.vector) throw new Error(`missing vector for ${r.id}`)
+      this.records.set(r.id, this.embedsText ? { ...r, vector: fakeVector(r.text) } : r)
+    }
+  }
+
+  async query(input: number[] | string, topK: number): Promise<RetrievedChunk[]> {
     if (this.failQuery) throw new Error("vector store unavailable")
+    if (this.embedsText !== (typeof input === "string")) throw new Error("wrong query input for this store")
+    if (typeof input === "string") this.textQueries++
+    const vector = typeof input === "string" ? fakeVector(input) : input
     return [...this.records.values()]
       .filter((r) => r.metadata.publicationStatus === "published")
-      .map((r) => ({ id: r.id, text: r.text, metadata: r.metadata, score: cosineSimilarity(vector, r.vector) }))
+      .map((r) => ({ id: r.id, text: r.text, metadata: r.metadata, score: cosineSimilarity(vector, r.vector!) }))
       .sort((a, b) => b.score - a.score)
       .slice(0, topK)
   }

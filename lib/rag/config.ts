@@ -8,13 +8,45 @@ function numberFromEnv(name: string, fallback: number, { min, max }: { min: numb
   return Number.isFinite(value) && value >= min && value <= max ? value : fallback
 }
 
-export const RAG_CONFIG = {
-  embedding: {
+/**
+ * Who turns text into vectors.
+ * - "upstash" (default): the Upstash Vector index embeds text itself with its built-in model.
+ *   No embedding API key and no extra bill; the index must be created with that model selected.
+ * - "gemini": we embed with Gemini (needs GOOGLE_GENERATIVE_AI_API_KEY) and send raw vectors;
+ *   the index must be a custom-dimension (768, COSINE) index.
+ */
+export type EmbeddingProvider = "upstash" | "gemini"
+
+export const EMBEDDING_PROVIDER: EmbeddingProvider =
+  process.env.RAG_EMBEDDING_PROVIDER === "gemini" ? "gemini" : "upstash"
+
+const EMBEDDINGS = {
+  upstash: {
+    provider: "upstash",
+    // Selected when the Upstash index is created; Upstash hosts it.
+    model: "openai/text-embedding-3-small",
+    dimensions: 1536,
+    // text-embedding-3-small gives lower cosine scores than Gemini for the same match,
+    // so its cut-offs are lower. Tune with the evaluation set.
+    minScore: 0.35,
+    scopeOverrideScore: 0.5,
+  },
+  gemini: {
+    provider: "gemini",
     model: "gemini-embedding-001",
     // 768 keeps storage and query cost low; Gemini supports 768/1536/3072 for this model.
-    // Changing either value changes every chunk hash, so the next reindex re-embeds everything.
     dimensions: 768,
+    minScore: 0.6,
+    scopeOverrideScore: 0.7,
   },
+} as const
+
+const embedding = EMBEDDINGS[EMBEDDING_PROVIDER]
+
+export const RAG_CONFIG = {
+  // Changing the provider, model or dimensions changes every chunk hash, so the next reindex
+  // re-embeds everything.
+  embedding,
   chunking: {
     /** Bump when the chunking algorithm changes, so every chunk is re-embedded. */
     version: 1,
@@ -27,9 +59,9 @@ export const RAG_CONFIG = {
      * Minimum cosine similarity (-1..1) for a chunk to count as relevant. It is a ranking cut-off,
      * not a confidence score.
      */
-    minScore: numberFromEnv("RAG_MIN_SCORE", 0.6, { min: 0, max: 1 }),
+    minScore: numberFromEnv("RAG_MIN_SCORE", embedding.minScore, { min: 0, max: 1 }),
     /** Score at which an otherwise out-of-scope question is treated as in scope. */
-    scopeOverrideScore: numberFromEnv("RAG_SCOPE_OVERRIDE_SCORE", 0.7, { min: 0, max: 1 }),
+    scopeOverrideScore: numberFromEnv("RAG_SCOPE_OVERRIDE_SCORE", embedding.scopeOverrideScore, { min: 0, max: 1 }),
     /** Upper bound on retrieved text sent to the model per question. */
     maxContextChars: numberFromEnv("RAG_MAX_CONTEXT_CHARS", 9000, { min: 1000, max: 40000 }),
     /** At most this many chunks from the same document, so one long article can't crowd out others. */
@@ -53,4 +85,4 @@ export const RAG_CONFIG = {
 } as const
 
 /** Folded into every chunk hash: changing the embedding setup invalidates all stored vectors. */
-export const EMBEDDING_FINGERPRINT = `${RAG_CONFIG.embedding.model}@${RAG_CONFIG.embedding.dimensions}/chunker-v${RAG_CONFIG.chunking.version}`
+export const EMBEDDING_FINGERPRINT = `${RAG_CONFIG.embedding.provider}:${RAG_CONFIG.embedding.model}@${RAG_CONFIG.embedding.dimensions}/chunker-v${RAG_CONFIG.chunking.version}`

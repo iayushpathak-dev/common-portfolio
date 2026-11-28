@@ -11,15 +11,13 @@ import {
 import type { AssistantMessage } from "@/lib/chat-modes"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { RAG_CONFIG } from "@/lib/rag/config"
-import type { Embedder } from "@/lib/rag/embeddings"
 import { buildInstructions } from "@/lib/rag/prompt"
 import { recordUnanswered, type QuestionStore } from "@/lib/rag/question-log"
-import { retrieve, toSources, type RetrievalResult } from "@/lib/rag/retrieve"
+import { retrieve, toSources, type RetrievalDeps, type RetrievalResult } from "@/lib/rag/retrieve"
 import { classify, routeFor } from "@/lib/rag/router"
 import { errorClass, type Trace } from "@/lib/rag/telemetry"
 import type { ChatRoute, RetrievedChunk } from "@/lib/rag/types"
 import type { HistoryMessage, ParsedChatRequest } from "@/lib/rag/validation"
-import type { VectorStore } from "@/lib/rag/vector-store"
 import type { ModelFactory } from "@/lib/rag/models"
 
 const { replies } = PORTFOLIO.chat
@@ -27,7 +25,7 @@ const { replies } = PORTFOLIO.chat
 export type ChatDeps = {
   models: ModelFactory
   /** null when the vector store isn't configured (the assistant falls back to core profile docs). */
-  retrieval: { embedder: Embedder; store: VectorStore } | null
+  retrieval: RetrievalDeps | null
   /** Core profile chunks used when the vector store isn't configured. */
   fallbackChunks: () => RetrievedChunk[]
   /** Saves questions the portfolio couldn't answer, for review. Optional. */

@@ -47,7 +47,7 @@ export function prepareDocuments(documents: KnowledgeDocument[]) {
 }
 
 /**
- * Makes the vector store match the given documents: embeds only new or changed chunks,
+ * Makes the vector store match the given documents: (re-)embeds only new or changed chunks,
  * upserts them, then deletes chunks that no longer exist (deleted or unpublished content).
  * Running it twice in a row does nothing the second time.
  */
@@ -59,7 +59,8 @@ export async function syncKnowledgeBase({
 }: {
   documents: KnowledgeDocument[]
   store: VectorStore
-  embedder: Embedder
+  /** Not used (and may be null) when the store embeds text itself. */
+  embedder: Embedder | null
   batchSize?: number
 }): Promise<SyncReport> {
   const start = Date.now()
@@ -73,9 +74,14 @@ export async function syncKnowledgeBase({
   for (let i = 0; i < plan.toUpsert.length; i += batchSize) {
     const batch = plan.toUpsert.slice(i, i + batchSize)
     try {
-      const vectors = await embedder.embedDocuments(batch.map((c) => c.text))
-      if (vectors.length !== batch.length) throw new Error("embedding count mismatch")
-      await store.upsert(batch.map((c, j) => ({ ...c, vector: vectors[j] })))
+      if (store.embedsText) {
+        await store.upsert(batch)
+      } else {
+        if (!embedder) throw new Error("no embedder configured for a vector-only store")
+        const vectors = await embedder.embedDocuments(batch.map((c) => c.text))
+        if (vectors.length !== batch.length) throw new Error("embedding count mismatch")
+        await store.upsert(batch.map((c, j) => ({ ...c, vector: vectors[j] })))
+      }
       upserted += batch.length
     } catch (error) {
       // Keep going: unchanged hashes mean the next run retries only what failed.

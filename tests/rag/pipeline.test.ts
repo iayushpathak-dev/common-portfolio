@@ -64,6 +64,7 @@ function chunk(documentId: string, score: number, text = `Facts from ${documentI
 
 function stubStore(matches: RetrievedChunk[] | Error): VectorStore & { queries: number } {
   return {
+    embedsText: false,
     queries: 0,
     async query() {
       this.queries++

@@ -4,13 +4,22 @@ import { Index } from "@upstash/vector"
 
 import type { Chunk, ChunkMetadata, RetrievedChunk } from "@/lib/rag/types"
 
-export type VectorRecord = Chunk & { vector: number[] }
+/** `vector` is omitted when the store embeds text itself (see `VectorStore.embedsText`). */
+export type VectorRecord = Chunk & { vector?: number[] }
 
 /** The storage operations RAG needs. Upstash implements it in production; tests use a fake. */
 export interface VectorStore {
+  /**
+   * True when the store turns text into vectors itself (an Upstash index created with a
+   * built-in embedding model). Then records are upserted without vectors and queries are text.
+   */
+  readonly embedsText: boolean
   upsert(records: VectorRecord[]): Promise<void>
-  /** Returns matches with cosine similarity in -1..1, highest first. Only published chunks. */
-  query(vector: number[], topK: number): Promise<RetrievedChunk[]>
+  /**
+   * Returns matches with cosine similarity in -1..1, highest first. Only published chunks.
+   * Pass text when `embedsText` is true, otherwise a vector.
+   */
+  query(input: number[] | string, topK: number): Promise<RetrievedChunk[]>
   delete(ids: string[]): Promise<void>
   /** Every stored chunk ID with the content hash it was embedded from. */
   listHashes(): Promise<Map<string, string>>
@@ -24,9 +33,10 @@ const PAGE_SIZE = 500
 
 /**
  * Upstash Vector over its REST API (no connection pool, works from serverless functions).
- * The index must be created with the same dimensions as RAG_CONFIG.embedding and the COSINE metric.
+ * With `embedsText`, the index must be created with RAG_CONFIG.embedding.model selected;
+ * otherwise with RAG_CONFIG.embedding.dimensions as a custom dimension. Both use COSINE.
  */
-export function createUpstashVectorStore(): VectorStore {
+export function createUpstashVectorStore({ embedsText }: { embedsText: boolean }): VectorStore {
   const index = new Index<ChunkMetadata>({
     url: process.env.UPSTASH_VECTOR_REST_URL!,
     token: process.env.UPSTASH_VECTOR_REST_TOKEN!,
@@ -34,17 +44,30 @@ export function createUpstashVectorStore(): VectorStore {
   const ns = index.namespace(process.env.UPSTASH_VECTOR_NAMESPACE ?? "")
 
   return {
+    embedsText,
+
     async upsert(records) {
       for (let i = 0; i < records.length; i += 100) {
-        await ns.upsert(
-          records.slice(i, i + 100).map((r) => ({ id: r.id, vector: r.vector, metadata: r.metadata })),
-        )
+        const batch = records.slice(i, i + 100)
+        if (embedsText) {
+          await ns.upsert(batch.map((r) => ({ id: r.id, data: r.text, metadata: r.metadata })))
+        } else {
+          await ns.upsert(
+            batch.map((r) => {
+              if (!r.vector) throw new Error(`missing vector for ${r.id}`)
+              return { id: r.id, vector: r.vector, metadata: r.metadata }
+            }),
+          )
+        }
       }
     },
 
-    async query(vector, topK) {
+    async query(input, topK) {
+      if (embedsText !== (typeof input === "string")) {
+        throw new Error(embedsText ? "this index embeds text: query with text" : "this index needs a query vector")
+      }
       const results = await ns.query<ChunkMetadata>({
-        vector,
+        ...(typeof input === "string" ? { data: input } : { vector: input }),
         topK,
         includeMetadata: true,
         // Defence in depth: only published content is indexed, and only published content is queried.

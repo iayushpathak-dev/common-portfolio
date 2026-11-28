@@ -1,14 +1,14 @@
-// Provider-backed retrieval evaluation. Costs a few embedding calls and vector queries, so it
+// Provider-backed retrieval evaluation. Costs a few vector queries (and embedding calls with the
+// "gemini" provider), so it
 // only runs with `npm run rag:eval` and real credentials, against an index that has been
 // populated with `npm run rag:reindex`. It prints a report you can use to tune RAG_MIN_SCORE.
 import { describe, expect, it } from "vitest"
 
 import { buildKnowledgeDocuments } from "@/lib/rag/documents"
-import { createGeminiEmbedder } from "@/lib/rag/embeddings"
 import { RAG_CONFIG } from "@/lib/rag/config"
 import { retrieve, toSources } from "@/lib/rag/retrieve"
 import { classify, routeFor } from "@/lib/rag/router"
-import { createUpstashVectorStore, isVectorStoreConfigured } from "@/lib/rag/vector-store"
+import { createKnowledgeIndex, isKnowledgeIndexConfigured } from "@/lib/rag/knowledge-index"
 import data from "./rag-eval-cases.json"
 
 type Case = {
@@ -24,11 +24,11 @@ type Case = {
 }
 
 const cases = (data.cases as Case[]).filter((c) => c.question)
-const enabled = isVectorStoreConfigured() && Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY)
+const enabled = isKnowledgeIndexConfigured()
 
 describe.skipIf(!enabled)("RAG retrieval evaluation (real providers)", () => {
   it("meets the retrieval, abstention and citation targets", { timeout: 120_000 }, async () => {
-    const deps = { embedder: createGeminiEmbedder(), store: createUpstashVectorStore() }
+    const deps = createKnowledgeIndex()
     const publishedUrls = new Set(buildKnowledgeDocuments().map((d) => d.url))
     const rows: Record<string, unknown>[] = []
     const latencies: number[] = []
