@@ -1,4 +1,5 @@
-import { publishedProjects } from "@/content"
+import { articleHref, projectHref, publishedArticles, publishedProjects } from "@/content"
+import type { ArticleCategory } from "@/content/types"
 import { PORTFOLIO } from "@/lib/portfolio"
 import { absoluteUrl } from "@/lib/site"
 
@@ -39,7 +40,7 @@ export function listProjects() {
     organization: p.organization,
     summary: p.summary,
     tags: p.tags,
-    url: absoluteUrl(`/projects/${p.slug}`),
+    url: absoluteUrl(projectHref(p.slug)),
   }))
 }
 
@@ -55,8 +56,53 @@ export function getProjectDetails(slug: string) {
     evidence: project.evidence,
     categories: project.categories,
     stack: project.stack,
-    url: absoluteUrl(`/projects/${project.slug}`),
+    url: absoluteUrl(projectHref(project.slug)),
     // Only filled-in sections; `todos` (author-only notes) are never exposed.
     caseStudy: Object.fromEntries(Object.entries(project.sections).filter(([, text]) => text)),
+  }
+}
+
+export const ARTICLE_CATEGORIES = [
+  "AI Engineering",
+  "React",
+  "Next.js",
+  "TypeScript",
+  "Architecture",
+  "Performance",
+  "Engineering Workflow",
+] as const satisfies readonly ArticleCategory[]
+
+/** Published articles only, newest first. Drafts and planned topics are never listed. */
+export function listArticles(category?: ArticleCategory) {
+  return publishedArticles()
+    .filter((a) => !category || a.category === category)
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+    .map((a) => ({
+      slug: a.slug,
+      title: a.title,
+      summary: a.summary,
+      category: a.category,
+      tags: a.tags,
+      label: a.learningStatus,
+      updatedAt: a.updatedAt,
+      url: absoluteUrl(articleHref(a.slug)),
+    }))
+}
+
+/** One published article in full (Markdown), or null for drafts and unknown slugs. */
+export function getArticle(slug: string) {
+  const article = publishedArticles().find((a) => a.slug === slug)
+  if (!article || !article.body) return null
+  return {
+    slug: article.slug,
+    title: article.title,
+    summary: article.summary,
+    category: article.category,
+    tags: article.tags,
+    label: article.learningStatus,
+    updatedAt: article.updatedAt,
+    url: absoluteUrl(articleHref(article.slug)),
+    body: article.body,
+    sources: article.sourceUrls,
   }
 }

@@ -387,3 +387,14 @@ A private page for the job search with a username/password login (`FINDJOBS_USER
 - **Interview prep:** a fixed checklist (`lib/jobs/prep-topics.ts`) with done/notes per topic.
 
 Data lives in Upstash Redis hashes `fj:applications`, `fj:companies` and `fj:prep` (up to 1,000 items each). Under `next dev` without Redis it is kept in memory and lost on restart. API: `GET/POST /api/findjobs`, `GET /api/findjobs/search` (both need the login cookie), `POST /api/findjobs/login`, `POST /api/findjobs/logout`. Code: `lib/jobs/`, `components/findjobs/`, `app/findjobs/`.
+
+## MCP server (`/api/mcp`)
+
+The portfolio is a public, read-only MCP server, so any MCP client (Claude, ChatGPT, Cursor, Claude Code) can ask about Ayush's work. Setup instructions for visitors are on `/mcp`.
+
+- **Tools:** `get_profile`, `search_portfolio` (semantic search over the RAG index, raw excerpts, no model call), `list_projects`, `get_project`, `list_articles`, `get_article`. All are annotated `readOnlyHint`.
+- **Only published content.** Data comes from `publishedProjects()` / `publishedArticles()`, and search drops any chunk that isn't published. `/findjobs`, `/userquestions`, drafts and visitor questions are never reachable. Tests in `tests/mcp/` check this.
+- **Rate limit:** 60 requests per minute per client (`getMcpRateLimiter`, Redis or in-memory).
+- **Discovery:** `/mcp` page, home-page banner, `/llms.txt`, `/.well-known/mcp/server-card.json`, and `server.json` for the official MCP Registry (publish with `mcp-publisher publish`, signed in with GitHub).
+- **Test locally:** `npx @modelcontextprotocol/inspector` and connect to `http://localhost:3000/api/mcp`.
+- Code: `app/api/mcp/route.ts`, `lib/mcp/`.

@@ -1,4 +1,5 @@
 import { HomeView } from "@/components/home/home-view";
+import { McpBanner } from "@/components/mcp/mcp-banner";
 import { PageShell } from "@/components/page-shell";
 import { PORTFOLIO } from "@/lib/portfolio";
 import { jsonLd, pageMetadata } from "@/lib/seo";
@@ -25,6 +26,7 @@ export default function HomePage() {
         })}
       />
       <HomeView />
+      <McpBanner />
     </PageShell>
   );
 }

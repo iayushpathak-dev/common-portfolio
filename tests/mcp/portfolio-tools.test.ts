@@ -39,3 +39,38 @@ describe("MCP portfolio tools", () => {
     }
   })
 })
+
+describe("MCP article tools", () => {
+  it("list_articles returns only published articles, newest first", async () => {
+    const { ARTICLES } = await import("@/content")
+    const { listArticles } = await import("@/lib/mcp/portfolio-tools")
+    const listed = listArticles()
+    const published = ARTICLES.filter((a) => a.publicationStatus === "published").map((a) => a.slug)
+    expect(listed.map((a) => a.slug).sort()).toEqual(published.sort())
+    const dates = listed.map((a) => a.updatedAt)
+    expect([...dates].sort().reverse()).toEqual(dates)
+  })
+
+  it("list_articles filters by category", async () => {
+    const { listArticles } = await import("@/lib/mcp/portfolio-tools")
+    for (const a of listArticles("Next.js")) expect(a.category).toBe("Next.js")
+  })
+
+  it("get_article never returns drafts, planned topics or unknown slugs", async () => {
+    const { ARTICLES } = await import("@/content")
+    const { getArticle } = await import("@/lib/mcp/portfolio-tools")
+    expect(getArticle("does-not-exist")).toBeNull()
+    for (const a of ARTICLES.filter((x) => x.publicationStatus !== "published")) {
+      expect(getArticle(a.slug)).toBeNull()
+    }
+  })
+
+  it("get_article returns the full body for a published article", async () => {
+    const { getArticle, listArticles } = await import("@/lib/mcp/portfolio-tools")
+    const [first] = listArticles()
+    if (!first) return
+    const article = getArticle(first.slug)
+    expect(article?.body.length).toBeGreaterThan(100)
+    expect(article?.url).toContain(`/blog/${first.slug}`)
+  })
+})

@@ -1,0 +1,10 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.iayushpathak-dev/portfolio",
+  "title": "Ayush Pathak — portfolio",
+  "description": "Read-only MCP server for Ayush Pathak's portfolio: profile, case studies, articles and search.",
+  "version": "1.1.0",
+  "websiteUrl": "https://ayushpathak.co.in/mcp",
+  "repository": { "url": "https://github.com/iayushpathak-dev/common-portfolio", "source": "github" },
+  "remotes": [{ "type": "streamable-http", "url": "https://ayushpathak.co.in/api/mcp" }]
+}
