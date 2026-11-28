@@ -43,13 +43,16 @@ const gemmaSearchProvider = createGoogleGenerativeAI({
 // Gemma thinks by default and the hidden reasoning counts against maxOutputTokens: a measured
 // request spent 998 of 1000 tokens thinking and returned no text. "minimal" turns that off
 // (Gemma rejects "low" and thinkingBudget with a 400). Gemini models keep the SDK's default.
-const providerOptions: ProviderMetadata | undefined = IS_GEMINI
-  ? undefined
-  : { google: { thinkingConfig: { thinkingLevel: "minimal" } } }
+const gemmaThinking: ProviderMetadata = { google: { thinkingConfig: { thinkingLevel: "minimal" } } }
+const providerOptions: ProviderMetadata | undefined = IS_GEMINI ? undefined : gemmaThinking
 
 /** A different Google model to answer with when the primary one is busy or failing. */
-const googleFallback = (primary: string): ModelChoice["fallback"] =>
-  FALLBACK_MODEL && FALLBACK_MODEL !== primary ? { model: google(FALLBACK_MODEL), tools: {} } : undefined
+const googleFallback = (primary: string): ModelChoice["fallback"] => {
+  if (!FALLBACK_MODEL || FALLBACK_MODEL === primary) return undefined
+  // Gemma needs thinking turned down (see providerOptions below); Gemini keeps the defaults.
+  const options = FALLBACK_MODEL.startsWith("gemini-") ? undefined : gemmaThinking
+  return { model: google(FALLBACK_MODEL), tools: {}, providerOptions: options }
+}
 
 export const googleModels: ModelFactory = ({ webSearch }): ModelChoice => {
   if (!webSearch) return { model: google(GEMINI_MODEL), tools: {}, providerOptions, fallback: googleFallback(GEMINI_MODEL) }
