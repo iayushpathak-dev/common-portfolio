@@ -398,3 +398,12 @@ The portfolio is a public, read-only MCP server, so any MCP client (Claude, Chat
 - **Discovery:** `/mcp` page, home-page banner, `/llms.txt`, `/.well-known/mcp/server-card.json`, and `server.json` for the official MCP Registry (publish with `mcp-publisher publish`, signed in with GitHub).
 - **Test locally:** `npx @modelcontextprotocol/inspector` and connect to `http://localhost:3000/api/mcp`.
 - Code: `app/api/mcp/route.ts`, `lib/mcp/`.
+
+## Answer model
+
+`lib/rag/models.ts` picks the models per request:
+
+- **`ANTHROPIC_API_KEY` set:** Claude (`ANSWER_MODEL`, default `claude-haiku-5-5`) answers every route except `web_search`, which uses Gemini (`SEARCH_MODEL`, default `gemini-3.1-flash-lite`) with Google Search grounding.
+- **Not set:** the original setup, `GEMINI_MODEL` for everything (default Gemma 4).
+- `GOOGLE_GENERATIVE_AI_API_KEY` is required in both cases (embeddings and web search).
+- **Rollback:** remove `ANTHROPIC_API_KEY` in Vercel and redeploy.

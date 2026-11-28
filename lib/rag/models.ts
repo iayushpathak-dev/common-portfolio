@@ -1,9 +1,10 @@
 import "server-only"
 
+import { anthropic } from "@ai-sdk/anthropic"
 import { createGoogleGenerativeAI, google } from "@ai-sdk/google"
 import type { LanguageModel, ProviderMetadata, ToolSet } from "ai"
 
-import { GEMINI_MODEL } from "@/lib/model"
+import { ANSWER_MODEL, GEMINI_MODEL, SEARCH_MODEL, usesClaude } from "@/lib/model"
 
 export type ModelChoice = { model: LanguageModel; tools: ToolSet; providerOptions?: ProviderMetadata }
 
@@ -43,3 +44,19 @@ export const googleModels: ModelFactory = ({ webSearch }): ModelChoice => {
     ? { model: google(GEMINI_MODEL), tools: { google_search: google.tools.googleSearch({}) } as ToolSet }
     : { model: gemmaSearchProvider(GEMINI_MODEL), tools: {}, providerOptions }
 }
+
+/**
+ * Claude for answers, Gemini for web search. Claude handles every route that answers from the
+ * portfolio's own content (and general questions); only the web_search route goes to Gemini,
+ * because Google Search grounding is what returns web sources.
+ */
+export const claudeModels: ModelFactory = ({ webSearch }): ModelChoice => {
+  if (!webSearch) return { model: anthropic(ANSWER_MODEL), tools: {} }
+  if (SEARCH_MODEL.startsWith("gemini-")) {
+    return { model: google(SEARCH_MODEL), tools: { google_search: google.tools.googleSearch({}) } as ToolSet }
+  }
+  return googleModels({ webSearch: true })
+}
+
+/** Claude when ANTHROPIC_API_KEY is set, otherwise the original Gemini/Gemma setup. */
+export const selectModels = (): ModelFactory => (usesClaude() ? claudeModels : googleModels)
