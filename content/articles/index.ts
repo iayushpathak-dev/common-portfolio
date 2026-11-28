@@ -15,6 +15,14 @@ import productionReadyAiProduct from "./production-ready-ai-product.md"
 import testingAndEvaluatingRag from "./testing-and-evaluating-rag.md"
 import toolCallingAndStructuredOutputs from "./tool-calling-and-structured-outputs.md"
 import vercelAiSdkArchitecture from "./vercel-ai-sdk-architecture.md"
+import browserEncryptionIsNotSecurity from "./browser-encryption-is-not-security.md"
+import grpcFromNextjsRouteHandlers from "./grpc-from-nextjs-route-handlers.md"
+import mobileWebviewLayouts from "./mobile-webview-layouts.md"
+import nextjs16DataLoadingRule from "./nextjs-16-data-loading-rule.md"
+import portingVitePwaToNextjs16 from "./porting-vite-pwa-to-nextjs-16.md"
+import securityReviewingMyNextjsApp from "./security-reviewing-my-nextjs-app.md"
+import serverAndBrowserConversionTracking from "./server-and-browser-conversion-tracking.md"
+import zustandNextjsPerRequestStore from "./zustand-nextjs-per-request-store.md"
 
 // Every article starts as a draft: it shows in `next dev` only. After reviewing an article,
 // set its publicationStatus to "published" and update updatedAt.
@@ -322,6 +330,165 @@ export const ARTICLES: Article[] = [
     relatedArticles: ["article-ai-observability", "article-ai-application-security"],
   }),
 
+  article({
+    slug: "nextjs-16-data-loading-rule",
+    title: "Server Component, Server Action or Route Handler? A Rule for Loading Data in Next.js 16",
+    summary:
+      "Which of the three App Router tools to use for page-open data, writes and user-driven reads, and why a Server Action that sets a cookie and returns caused extra backend calls.",
+    category: "Next.js",
+    tags: ["Next.js", "Server Components", "Server Actions", "React Query"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "layers",
+    body: nextjs16DataLoadingRule,
+    sourceUrls: [
+      { title: "Next.js: Server Actions and Mutations", url: "https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions-and-mutations" },
+      { title: "Next.js: cookies", url: "https://nextjs.org/docs/app/api-reference/functions/cookies" },
+      { title: "TanStack Query: Infinite Queries", url: "https://tanstack.com/query/latest/docs/framework/react/guides/infinite-queries" },
+    ],
+    relatedProjects: ["project-fitpass-corporate-pwa"],
+    relatedArticles: ["article-porting-vite-pwa-to-nextjs-16", "article-zustand-nextjs-per-request-store"],
+  }),
+  article({
+    slug: "browser-encryption-is-not-security",
+    title: "Why Encrypting API Requests in the Browser Doesn't Protect Anything",
+    summary:
+      "A key in a NEXT_PUBLIC_ or VITE_ variable ships in the bundle. What HTTPS already covers, what 'safe' really means, and moving needed encryption to the server.",
+    category: "Architecture",
+    tags: ["Security", "Encryption", "Next.js", "BFF"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "shield",
+    body: browserEncryptionIsNotSecurity,
+    sourceUrls: [
+      { title: "Next.js: Environment Variables", url: "https://nextjs.org/docs/app/guides/environment-variables" },
+      { title: "Vite: Env Variables and Modes", url: "https://vite.dev/guide/env-and-mode" },
+      { title: "OWASP: Cryptographic Storage Cheat Sheet", url: "https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html" },
+    ],
+    relatedProjects: ["project-backend-for-frontend"],
+    relatedArticles: ["article-security-reviewing-my-nextjs-app"],
+  }),
+  article({
+    slug: "porting-vite-pwa-to-nextjs-16",
+    title: "Porting a Vite React PWA to Next.js 16: What Changed",
+    summary:
+      "Rebuilding a ~370-file partner PWA on the App Router: an allowlisted BFF proxy, server-side login, data loading by kind and a scan of the old code that set the migration order.",
+    category: "Next.js",
+    tags: ["Next.js", "Migration", "BFF", "Auth.js"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "refresh",
+    body: portingVitePwaToNextjs16,
+    sourceUrls: [
+      { title: "Next.js: Migrating from Vite", url: "https://nextjs.org/docs/app/guides/migrating/from-vite" },
+      { title: "Auth.js: Credentials provider", url: "https://authjs.dev/getting-started/authentication/credentials" },
+    ],
+    relatedProjects: ["project-fitpass-corporate-pwa"],
+    relatedArticles: ["article-nextjs-16-data-loading-rule", "article-security-reviewing-my-nextjs-app"],
+  }),
+  article({
+    slug: "security-reviewing-my-nextjs-app",
+    title: "I Security-Reviewed My Own Next.js App: What I Found",
+    summary:
+      "Fourteen findings from reviewing an App Router app: a built-in Auth.js route that let users edit their session, tokens in logs, Host-header redirects, and turning it into a checklist.",
+    category: "Architecture",
+    tags: ["Security", "Next.js", "Auth.js", "Code Review"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "bug",
+    body: securityReviewingMyNextjsApp,
+    sourceUrls: [
+      { title: "Next.js: Data Security", url: "https://nextjs.org/docs/app/guides/data-security" },
+      { title: "Auth.js: Session strategies", url: "https://authjs.dev/concepts/session-strategies" },
+      { title: "OWASP Top 10", url: "https://owasp.org/www-project-top-ten/" },
+    ],
+    relatedProjects: ["project-fitpass-corporate-pwa"],
+    relatedArticles: ["article-browser-encryption-is-not-security", "article-nextjs-16-data-loading-rule"],
+  }),
+  article({
+    slug: "zustand-nextjs-per-request-store",
+    title: "The Zustand Mistake That Can Leak One User's Data to Another in Next.js",
+    summary:
+      "Why a module-level store is shared by every request on the server, and the store factory + context provider pattern that gives each request its own store.",
+    category: "React",
+    tags: ["Zustand", "React", "Next.js", "State Management"],
+    publicationStatus: "draft",
+    learningStatus: "Hands-on Implementation",
+    updatedAt: "2026-11-28",
+    icon: "atom",
+    body: zustandNextjsPerRequestStore,
+    sourceUrls: [
+      { title: "Zustand: Setup with Next.js", url: "https://zustand.docs.pmnd.rs/guides/nextjs" },
+      { title: "TanStack Query: Advanced Server Rendering", url: "https://tanstack.com/query/latest/docs/framework/react/guides/advanced-ssr" },
+    ],
+    relatedProjects: ["project-fitpass-corporate-pwa"],
+    relatedArticles: ["article-nextjs-16-data-loading-rule"],
+  }),
+  article({
+    slug: "mobile-webview-layouts",
+    title: "Mobile WebView Layouts That Hold Up: dvh, Safe Areas, the iOS Keyboard and Old Android",
+    summary:
+      "Rules for screens that run inside iOS and Android apps: dvh with fallbacks, safe-area utilities, a visualViewport script for the iOS keyboard, and Tailwind 4 on WebViews that drop @layer.",
+    category: "Next.js",
+    tags: ["WebView", "Mobile", "Tailwind CSS", "CSS"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "smartphone",
+    body: mobileWebviewLayouts,
+    sourceUrls: [
+      { title: "MDN: VisualViewport", url: "https://developer.mozilla.org/en-US/docs/Web/API/VisualViewport" },
+      { title: "MDN: env() and safe-area-inset", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/env" },
+      { title: "Next.js: generateViewport", url: "https://nextjs.org/docs/app/api-reference/functions/generate-viewport" },
+      { title: "PostCSS Cascade Layers", url: "https://github.com/csstools/postcss-plugins/tree/main/plugins/postcss-cascade-layers" },
+    ],
+    relatedProjects: ["project-native-app-webview-integration", "project-fitpass-corporate-pwa"],
+    relatedArticles: [],
+  }),
+  article({
+    slug: "server-and-browser-conversion-tracking",
+    title: "Tracking Conversions on the Server and in the Browser: Meta CAPI, GA4 and Segment",
+    summary:
+      "One tracking call for three tools, campaign attribution that survives a multi-step funnel, sendBeacon, hashed user data and event ids that stop conversions being counted twice.",
+    category: "Architecture",
+    tags: ["Analytics", "Meta Conversions API", "GA4", "Segment"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "activity",
+    body: serverAndBrowserConversionTracking,
+    sourceUrls: [
+      { title: "Meta: Conversions API", url: "https://developers.facebook.com/docs/marketing-api/conversions-api" },
+      { title: "Meta: Deduplicate Pixel and Server Events", url: "https://developers.facebook.com/docs/marketing-api/conversions-api/deduplicate-pixel-and-server-events" },
+      { title: "MDN: Navigator.sendBeacon()", url: "https://developer.mozilla.org/en-US/docs/Web/API/Navigator/sendBeacon" },
+    ],
+    relatedProjects: ["project-marketing-landing-pages"],
+    relatedArticles: [],
+  }),
+  article({
+    slug: "grpc-from-nextjs-route-handlers",
+    title: "gRPC from Next.js Route Handlers, and How a Dynamic Path Put .env in My Standalone Build",
+    summary:
+      "Calling a gRPC service from a Route Handler with grpc-js and proto-loader, why a fully dynamic proto path made Next.js trace the whole project, and the outputFileTracingIncludes fix.",
+    category: "Next.js",
+    tags: ["gRPC", "Next.js", "Route Handlers", "Deployment"],
+    publicationStatus: "draft",
+    learningStatus: "Professional Experience",
+    updatedAt: "2026-11-28",
+    icon: "plug",
+    body: grpcFromNextjsRouteHandlers,
+    sourceUrls: [
+      { title: "Next.js: output (standalone and file tracing)", url: "https://nextjs.org/docs/app/api-reference/config/next-config-js/output" },
+      { title: "@grpc/grpc-js on npm", url: "https://www.npmjs.com/package/@grpc/grpc-js" },
+      { title: "@grpc/proto-loader on npm", url: "https://www.npmjs.com/package/@grpc/proto-loader" },
+    ],
+    relatedProjects: ["project-backend-for-frontend"],
+    relatedArticles: [],
+  }),
   // Planned topics: listed on the blog as upcoming, with no article page yet.
   ...(
     [
