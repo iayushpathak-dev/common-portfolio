@@ -14,6 +14,8 @@ export type TraceFields = {
   inputTokens?: number
   outputTokens?: number
   searchUnavailable?: boolean
+  /** Why the fallback model answered (error class of the primary model's failure). */
+  fallback?: string
   error?: string
 }
 

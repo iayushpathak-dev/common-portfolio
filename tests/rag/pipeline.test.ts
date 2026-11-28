@@ -240,6 +240,31 @@ describe("runChat: web search", () => {
 })
 
 describe("runChat: failures and observability", () => {
+  it("answers with the fallback model when the primary model is busy", async () => {
+    const busy = new APICallError({
+      message: "This model is currently experiencing high demand.",
+      url: "https://example.com",
+      requestBodyValues: {},
+      statusCode: 503,
+      isRetryable: true,
+    })
+    const primary = failingModel(busy)
+    const backup = textModel("Answer from the fallback model.")
+    const store = stubStore([chunk("project-fitshop", 0.9)])
+    const deps: ChatDeps = {
+      models: () => ({ model: primary, tools: {}, fallback: { model: backup, tools: {} } }),
+      retrieval: { embedder: createFakeEmbedder().embedder, store },
+      fallbackChunks: () => [],
+      now: () => new Date("2026-10-18T10:00:00Z"),
+    }
+    const res = await ask(deps, "What did you build on FITSHOP?")
+    expect(res.text).toBe("Answer from the fallback model.")
+    expect(res.error).toBeUndefined()
+    expect(res.sources).toEqual(["https://ayushpathak.co.in/project-fitshop"])
+    expect(primary.doStreamCalls).toHaveLength(1) // not retried
+    expect(res.log.fallback).toBe("provider")
+  })
+
   it("returns a safe error message when the model fails, with no citations", async () => {
     const boom = new APICallError({ message: "internal stack details", url: "https://x", requestBodyValues: {}, statusCode: 500, isRetryable: false })
     const { deps } = setup({ matches: [chunk("project-bff", 0.9)], model: failingModel(boom) })

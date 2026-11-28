@@ -4,9 +4,18 @@ import { anthropic } from "@ai-sdk/anthropic"
 import { createGoogleGenerativeAI, google } from "@ai-sdk/google"
 import type { LanguageModel, ProviderMetadata, ToolSet } from "ai"
 
-import { ANSWER_MODEL, GEMINI_MODEL, SEARCH_MODEL, usesClaude } from "@/lib/model"
+import { ANSWER_MODEL, FALLBACK_MODEL, GEMINI_MODEL, SEARCH_MODEL, usesClaude } from "@/lib/model"
 
-export type ModelChoice = { model: LanguageModel; tools: ToolSet; providerOptions?: ProviderMetadata }
+export type ModelChoice = {
+  model: LanguageModel
+  tools: ToolSet
+  providerOptions?: ProviderMetadata
+  /**
+   * Used when the primary model fails before answering (e.g. Google's "high demand" 503 on
+   * free models), so a busy provider doesn't fail the visitor's question.
+   */
+  fallback?: Omit<ModelChoice, "fallback">
+}
 
 /**
  * Web search is a separate capability: only routes that are allowed to search receive it.
@@ -38,8 +47,12 @@ const providerOptions: ProviderMetadata | undefined = IS_GEMINI
   ? undefined
   : { google: { thinkingConfig: { thinkingLevel: "minimal" } } }
 
+/** A different Google model to answer with when the primary one is busy or failing. */
+const googleFallback = (primary: string): ModelChoice["fallback"] =>
+  FALLBACK_MODEL && FALLBACK_MODEL !== primary ? { model: google(FALLBACK_MODEL), tools: {} } : undefined
+
 export const googleModels: ModelFactory = ({ webSearch }): ModelChoice => {
-  if (!webSearch) return { model: google(GEMINI_MODEL), tools: {}, providerOptions }
+  if (!webSearch) return { model: google(GEMINI_MODEL), tools: {}, providerOptions, fallback: googleFallback(GEMINI_MODEL) }
   return IS_GEMINI
     ? { model: google(GEMINI_MODEL), tools: { google_search: google.tools.googleSearch({}) } as ToolSet }
     : { model: gemmaSearchProvider(GEMINI_MODEL), tools: {}, providerOptions }
@@ -51,7 +64,7 @@ export const googleModels: ModelFactory = ({ webSearch }): ModelChoice => {
  * because Google Search grounding is what returns web sources.
  */
 export const claudeModels: ModelFactory = ({ webSearch }): ModelChoice => {
-  if (!webSearch) return { model: anthropic(ANSWER_MODEL), tools: {} }
+  if (!webSearch) return { model: anthropic(ANSWER_MODEL), tools: {}, fallback: googleFallback(ANSWER_MODEL) }
   if (SEARCH_MODEL.startsWith("gemini-")) {
     return { model: google(SEARCH_MODEL), tools: { google_search: google.tools.googleSearch({}) } as ToolSet }
   }
