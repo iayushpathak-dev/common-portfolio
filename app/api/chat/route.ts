@@ -1,6 +1,8 @@
 import { createUIMessageStreamResponse } from "ai"
+import { after } from "next/server"
 
 import { PORTFOLIO } from "@/lib/portfolio"
+import { scheduleIndexSync } from "@/lib/rag/auto-sync"
 import { runChat } from "@/lib/rag/pipeline"
 import { getChatDeps } from "@/lib/rag/service"
 import { createTrace } from "@/lib/rag/telemetry"
@@ -38,6 +40,9 @@ export async function POST(req: Request) {
 
   const parsed = parseChatRequest(body)
   if (!parsed.ok) return Response.json({ error: parsed.error }, { status: 400 })
+
+  // Keeps the vector index in step with deployed content (background, throttled, locked).
+  scheduleIndexSync(after)
 
   const trace = createTrace()
   const stream = runChat({ request: parsed.value, deps: getChatDeps(), trace, abortSignal: req.signal })
